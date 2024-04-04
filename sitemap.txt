@@ -1,2 +1,11 @@
-https://lcjd99.github.io/uncategorized/hello-world/
+https://lcjd99.github.io/CS61C/cs61c/C-and-memory/
+https://lcjd99.github.io/Project/SEUForum-Stack/
+https://lcjd99.github.io/test/hello-world/
+https://lcjd99.github.io/tags/index.html
+https://lcjd99.github.io/categories/index.html
 https://lcjd99.github.io/
+https://lcjd99.github.io/tags/JavaScript/
+https://lcjd99.github.io/tags/C/
+https://lcjd99.github.io/categories/test/
+https://lcjd99.github.io/categories/Project/
+https://lcjd99.github.io/categories/CS61C/
