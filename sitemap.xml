@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://lcjd99.github.io/Course/cs61c/Lab2/</loc>
+    <loc>https://lcjd99.github.io/Postgraduate/CS/Organization/Lecture2/</loc>
     
     <lastmod>2024-04-12</lastmod>
     
@@ -11,7 +11,43 @@
   </url>
   
   <url>
-    <loc>https://lcjd99.github.io/Postgraduate/CS/Organization/Lecture2/</loc>
+    <loc>https://lcjd99.github.io/Course/csapp/Lab4/</loc>
+    
+    <lastmod>2024-04-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://lcjd99.github.io/Course/csapp/Lab3/</loc>
+    
+    <lastmod>2024-04-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://lcjd99.github.io/Course/csapp/Lab2/</loc>
+    
+    <lastmod>2024-04-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://lcjd99.github.io/Course/csapp/Lab1/</loc>
+    
+    <lastmod>2024-04-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://lcjd99.github.io/Course/cs61c/Lab2/</loc>
     
     <lastmod>2024-04-12</lastmod>
     
@@ -90,14 +126,14 @@
   </url>
   
   <url>
-    <loc>https://lcjd99.github.io/tags/C/</loc>
+    <loc>https://lcjd99.github.io/tags/utils/</loc>
     <lastmod>2024-04-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://lcjd99.github.io/tags/utils/</loc>
+    <loc>https://lcjd99.github.io/tags/C/</loc>
     <lastmod>2024-04-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -120,13 +156,6 @@
   </url>
   
   <url>
-    <loc>https://lcjd99.github.io/categories/others/</loc>
-    <lastmod>2024-04-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://lcjd99.github.io/categories/git/</loc>
     <lastmod>2024-04-12</lastmod>
     <changefreq>weekly</changefreq>
@@ -134,7 +163,21 @@
   </url>
   
   <url>
+    <loc>https://lcjd99.github.io/categories/others/</loc>
+    <lastmod>2024-04-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://lcjd99.github.io/categories/CS61C/</loc>
+    <lastmod>2024-04-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://lcjd99.github.io/categories/CSAPP/</loc>
     <lastmod>2024-04-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

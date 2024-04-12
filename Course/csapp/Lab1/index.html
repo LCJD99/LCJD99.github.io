@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>CSAPP深入理解计算机系统 Lab1(Data Lab) 详解 | LCJD BLOG# 页面title</title>
+  <meta name="description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。   实验说明 在动手实验之前建议仔细阅读实验提供的文档以及bits.c前的注释。本实验对应CSAPP的第二章，是对位运算的处理和应用。在解决这些问题过程中，会对位运算有更深刻的理解。实验中提供13个函数接口，我们需要根据函数前注释的要求实现相应的功能，同时满足所要求的限制条件。  环境配置 我的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP深入理解计算机系统 Lab1(Data Lab) 详解">
+<meta property="og:url" content="https://lcjd99.github.io/Course/csapp/Lab1/index.html">
+<meta property="og:site_name" content="凌晨九点空间">
+<meta property="og:description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。   实验说明 在动手实验之前建议仔细阅读实验提供的文档以及bits.c前的注释。本实验对应CSAPP的第二章，是对位运算的处理和应用。在解决这些问题过程中，会对位运算有更深刻的理解。实验中提供13个函数接口，我们需要根据函数前注释的要求实现相应的功能，同时满足所要求的限制条件。  环境配置 我的">
+<meta property="og:locale">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-684360085f1a3a6b097a292443c528cf.png">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-35accbab920239a11b5d3bd2a11920ad.png">
+<meta property="article:published_time" content="2023-10-01T14:51:47.000Z">
+<meta property="article:modified_time" content="2024-04-12T15:33:45.006Z">
+<meta property="article:author" content="凌晨九点">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic4.zhimg.com/80/v2-684360085f1a3a6b097a292443c528cf.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://lcjd99.github.io/Course/csapp/Lab1/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    <link href="//cdn.jsdelivr.net/npm/katex@0.9.0/dist/katex.min.css" rel="stylesheet">
+  
+  
+  
+  
+<meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="凌晨九点空间" type="application/atom+xml">
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/LCJD99" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">凌晨九点</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">CS Student</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">Board</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CS61C/">CS61C</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/CSAPP/">CSAPP</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">others</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computer-Organization/" rel="tag">Computer Organization</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-Network/" rel="tag">Linux Network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/utils/" rel="tag">utils</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/C/" style="font-size: 14px;">C</a> <a href="/tags/Computer-Organization/" style="font-size: 13px;">Computer Organization</a> <a href="/tags/Linux-Network/" style="font-size: 13px;">Linux Network</a> <a href="/tags/utils/" style="font-size: 13px;">utils</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Archive</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a>
+              </p>
+              <p class="item-title">
+                <a href="/Postgraduate/CS/Organization/Lecture2/" class="title">【考研】计组 （二）： 数据的表示和运算</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-12T14:51:47.000Z" itemprop="datePublished">2024-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a>
+              </p>
+              <p class="item-title">
+                <a href="/Linux/concurrent-in-linux/" class="title">Linux中对网络并发处理的技术</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-10T09:15:47.000Z" itemprop="datePublished">2024-04-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/git/">git</a>
+              </p>
+              <p class="item-title">
+                <a href="/utils/git-1/" class="title">git 入门教程（一）：基本用法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-09T14:50:47.000Z" itemprop="datePublished">2024-04-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/others/">others</a>
+              </p>
+              <p class="item-title">
+                <a href="/others/c-format-output/" class="title">C语言格式化输出问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/CS61C/">CS61C</a>
+              </p>
+              <p class="item-title">
+                <a href="/Course/cs61c/Lab2/" class="title">【CS61C】Lab2 实验解析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Course/csapp/Lab1" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CSAPP深入理解计算机系统 Lab1(Data Lab) 详解
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Course/csapp/Lab1/" class="article-date">
+	  <time datetime="2023-10-01T14:51:47.000Z" itemprop="datePublished">2023-10-01</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/CSAPP/">CSAPP</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/C/" rel="tag">C</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Course/csapp/Lab1/#comments" class="article-comment-link">Comments</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 3.9k(words)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 17(minutes)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。</p>
+</blockquote>
+<h2 id="实验说明"><a class="markdownIt-Anchor" href="#实验说明"></a> 实验说明</h2>
+<p>在动手实验之前建议仔细阅读实验提供的<a target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/3e/datalab.pdf">文档</a>以及<code>bits.c</code>前的注释。本实验对应CSAPP的第二章，是对位运算的处理和应用。在解决这些问题过程中，会对位运算有更深刻的理解。实验中提供13个函数接口，我们需要根据函数前注释的要求实现相应的功能，同时满足所要求的限制条件。</p>
+<h2 id="环境配置"><a class="markdownIt-Anchor" href="#环境配置"></a> 环境配置</h2>
+<p>我的实验环境是Debian(x86_64)，编译32位的程序需要使用 <code>sudo apt-get install gcc-multilib</code>下载<code>gcc-multilib</code>，这是一个能够实现不同位数的编译器。下载后可以正常<code>make</code>编译。</p>
+<p>实验中的工具<code>dlc</code>和<code>driver.pl</code>中可用<code>-h</code>参数查看使用手册</p>
+<h2 id="一些小坑"><a class="markdownIt-Anchor" href="#一些小坑"></a> 一些小坑</h2>
+<ol>
+<li>使用<code>dlc</code>时出现<code>bits.c:xx:parse error bits.c:xx:undeclared variable xx</code> 是因为该编译器仅仅支持C89的语法,需要将变量全部在代码块的开头声明。</li>
+<li>使用<code>dlc</code>时出现<code>bits.c:284: Warning: suggest parentheses around arithmetic in operand of x</code> 是因为运算符优先级肯存在歧义，建议为优先运算块加括号</li>
+</ol>
+<h2 id="整数规则细节"><a class="markdownIt-Anchor" href="#整数规则细节"></a> 整数规则细节</h2>
+<h3 id="表达式规则"><a class="markdownIt-Anchor" href="#表达式规则"></a> 表达式规则</h3>
+<ol>
+<li>整数的范围在0~255之间，不能使用大整数</li>
+<li>只能使用局部变量和参数</li>
+<li>允许使用单目运算符 <code>! ~</code></li>
+<li>允许使用双目运算符 <code>&amp; ^ | + &lt;&lt; &gt;&gt;</code></li>
+</ol>
+<h3 id="禁止使用"><a class="markdownIt-Anchor" href="#禁止使用"></a> 禁止使用</h3>
+<ol>
+<li>非顺序执行的语句</li>
+<li>宏</li>
+<li>调用函数</li>
+<li>使用不在规定范围内的操作符</li>
+<li>使用强制类型转换</li>
+<li>使用非<code>int</code>类型，使用数组，结构体等</li>
+</ol>
+<h3 id="对运行机器的规定"><a class="markdownIt-Anchor" href="#对运行机器的规定"></a> 对运行机器的规定</h3>
+<ol>
+<li>使用补码，32位整数表示</li>
+<li>按算术方式执行右移</li>
+<li>如果移位数 <code>大于31</code> 或 <code>小于0</code> , 移位有不可预测的行为</li>
+</ol>
+<h2 id="整数具体题解"><a class="markdownIt-Anchor" href="#整数具体题解"></a> 整数具体题解</h2>
+<h3 id="1-bitxor"><a class="markdownIt-Anchor" href="#1-bitxor"></a> 1. bitXor</h3>
+<p>根据异或运算的表达式</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>A</mi><mo>⊕</mo><mi>B</mi><mo>=</mo><mo stretchy="false">(</mo><mi>A</mi><mo>∧</mo><mi mathvariant="normal">¬</mi><mi>B</mi><mo stretchy="false">)</mo><mo>∨</mo><mo stretchy="false">(</mo><mi mathvariant="normal">¬</mi><mi>A</mi><mo>∧</mo><mi>B</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">A \oplus B = (A \land \lnot B) \lor (\lnot A \land B)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">¬</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∨</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">¬</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span></span></p>
+<p>可知代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * tmin - return minimum two&#x27;s complement integer </span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 4                                 </span></span><br><span class="line"><span class="comment"> *   Rating: 1   </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">bitXor</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123;</span><br><span class="line">  <span class="type">int</span> a = x &amp; ~y;</span><br><span class="line">  <span class="type">int</span> b = ~x &amp; y;</span><br><span class="line">  <span class="type">int</span> ans = ~(~a &amp; ~b);</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-tmin"><a class="markdownIt-Anchor" href="#2-tmin"></a> 2. tmin</h3>
+<p>根据补码规则，最高位符号位为1时为负数，CSAPP上有一张图很好解释补码的规则<img src="https://pic4.zhimg.com/80/v2-684360085f1a3a6b097a292443c528cf.png" alt="补码的规则" /><br />
+所以根据这个规则我们知道最小的补数就是最高位为1，其余为0的数，实现代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * tmin - return minimum two&#x27;s complement integer </span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 4</span></span><br><span class="line"><span class="comment"> *   Rating: 1</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">tmin</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">	<span class="type">int</span> p = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">return</span> p &lt;&lt; <span class="number">31</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-istmax"><a class="markdownIt-Anchor" href="#3-istmax"></a> 3. isTmax</h3>
+<ol>
+<li>同样根据上面的图可知，最大的数和最小的数在补数规则中是完全去反的规则，由此可以找出最大的数。要想不通过<code>==</code>比较两个数，我们可以采用异或后结果是否等于0的方式判断，因为只有相等才会异或为0。</li>
+<li>但是本题禁止使用<code>&lt;&lt;</code>，代表我们需要采用另一种方式实现。我们令最大的数<code>0x7fffffff</code>为<code>a</code>。发现<code>a+a = 0xffffffe</code>(相当于右移一位)，对其去反的结果为1。顺着这个思路我们只需要找到其他满足<code>~(x+x+1) == 0</code>的数排除即可。不难思考，将<code>0xffffffe</code>右移的两种情况中的另一种为<code>0xffffffff</code>（也就是-1）,即<code>-1 + 1 == 0</code>，因此判断逻辑不难表达如下</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/* isTmax - returns 1 if x is the maximum, two&#x27;s complement number,</span></span><br><span class="line"><span class="comment"> *     and 0 otherwise </span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | +</span></span><br><span class="line"><span class="comment"> *   Max ops: 10</span></span><br><span class="line"><span class="comment"> *   Rating: 1</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">isTmax</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="comment">//判断想x+x+1取反后是否为0,tag可减少一个符号的使用</span></span><br><span class="line">  <span class="type">int</span> tag = x + <span class="number">1</span>;</span><br><span class="line">  <span class="type">int</span> tmp1 = ~(x + tag);</span><br><span class="line">  <span class="type">int</span> flag1 = !tmp1;</span><br><span class="line">  <span class="comment">//判断是否为-1</span></span><br><span class="line">  <span class="type">int</span> flag2 = !tag;</span><br><span class="line">  <span class="comment">//产生结果后</span></span><br><span class="line">  <span class="keyword">return</span> flag1 &amp; !flag2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="4-alloddbits"><a class="markdownIt-Anchor" href="#4-alloddbits"></a> 4. allOddBits</h3>
+<p>题目需要找到所有奇数位都是1的数，可以通过移动一位后，判断或运算是否所有位都是1来判断结果,其中全位都是1就是-1，可以再简化判断</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * allOddBits - return 1 if all odd-numbered bits in word set to 1</span></span><br><span class="line"><span class="comment"> *   where bits are numbered from 0 (least significant) to 31 (most significant)</span></span><br><span class="line"><span class="comment"> *   Examples allOddBits(0xFFFFFFFD) = 0, allOddBits(0xAAAAAAAA) = 1</span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 12</span></span><br><span class="line"><span class="comment"> *   Rating: 2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">allOddBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> t = <span class="number">0xaa</span> | (<span class="number">0xaa</span> &lt;&lt; <span class="number">8</span>) | (<span class="number">0xaa</span> &lt;&lt; <span class="number">16</span>) | (<span class="number">0xaa</span> &lt;&lt; <span class="number">24</span>);</span><br><span class="line">  <span class="type">int</span> a = x &amp; t;</span><br><span class="line">  <span class="type">int</span> b = a &gt;&gt; <span class="number">1</span>;</span><br><span class="line">  <span class="type">int</span> c = a | b;</span><br><span class="line">  <span class="type">int</span> ans = !(c + <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-negate"><a class="markdownIt-Anchor" href="#5-negate"></a> 5. negate</h3>
+<p>直接使用补码定义即可</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * negate - return -x </span></span><br><span class="line"><span class="comment"> *   Example: negate(1) = -1.</span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 5</span></span><br><span class="line"><span class="comment"> *   Rating: 2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">negate</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> ~x + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="6-isasciidigit"><a class="markdownIt-Anchor" href="#6-isasciidigit"></a> 6. isAsciiDigit</h3>
+<p>主要思路是首先通过判断高位(4到7位)的为<code>0011b</code>,可以同时判断其他位是否为0,然后判断最后一位，观察发现（可以通过卡诺图辅助），满足条件的如下：满足0xxx (x表示任意)或者是8或9,实现代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * isAsciiDigit - return 1 if 0x30 &lt;= x &lt;= 0x39 (ASCII codes for characters &#x27;0&#x27; to &#x27;9&#x27;)</span></span><br><span class="line"><span class="comment"> *   Example: isAsciiDigit(0x35) = 1.</span></span><br><span class="line"><span class="comment"> *            isAsciiDigit(0x3a) = 0.</span></span><br><span class="line"><span class="comment"> *            isAsciiDigit(0x05) = 0.</span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 15</span></span><br><span class="line"><span class="comment"> *   Rating: 3</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">isAsciiDigit</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> y = x &amp; <span class="number">0xf</span>;</span><br><span class="line">  <span class="type">int</span> z = (x &gt;&gt; <span class="number">4</span>);</span><br><span class="line">  <span class="type">int</span> flag1 = (!(y&gt;&gt;<span class="number">3</span>)) | ( !(y ^ <span class="number">8</span>) | !(y ^ <span class="number">9</span>));</span><br><span class="line">  <span class="type">int</span> flag2 = !(z ^ <span class="number">3</span>);</span><br><span class="line">  <span class="keyword">return</span> flag1 &amp; flag2 ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述的符号数为13，符合规定。但是观察发现，每次都需要使用<code>!</code>,我们可以通过摩根公式化简<code>flag1</code>,筛选掉不要的值，观察发现，在<code>11xxb</code>和<code>1x1xb</code>是需要剔除的元素,代码简化后如下,只需要11个符号</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isAsciiDigit</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> flag1 = !((x &amp; <span class="number">0xa</span>) ^ <span class="number">0xa</span>);</span><br><span class="line">  <span class="type">int</span> flag2 = !((x &amp; <span class="number">0xc</span>) ^ <span class="number">0xc</span>);</span><br><span class="line">  <span class="type">int</span> flag3 = ((x &gt;&gt; <span class="number">4</span>) ^ <span class="number">3</span>);</span><br><span class="line">  <span class="keyword">return</span> !(flag1 | flag2 | flag3);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="7-conditional"><a class="markdownIt-Anchor" href="#7-conditional"></a> 7. conditional</h3>
+<p>我们需要通过<strong>任何非1的数</strong>生成出<code>0xffffffff</code>(也就是-1)，同时0还是0。这个算法可以把思路转化为通过1生成0，通过0生成-1，那么也就-1对数减1即可。<br />
+具体可见代码注释</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * conditional - same as x ? y : z </span></span><br><span class="line"><span class="comment"> *   Example: conditional(2,4,5) = 4</span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 16</span></span><br><span class="line"><span class="comment"> *   Rating: 3</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">conditional</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">int</span> z)</span> &#123;</span><br><span class="line">  <span class="comment">//产生-1</span></span><br><span class="line">  <span class="type">int</span> neg = ~<span class="number">0</span>;</span><br><span class="line">  <span class="comment">//!!x保证任何非0数为1，0还是0</span></span><br><span class="line">  <span class="type">int</span> mask = !!x + neg;</span><br><span class="line">  <span class="comment">//使用掩码的方式实现条件</span></span><br><span class="line">  <span class="keyword">return</span> (y &amp; ~mask) | (z &amp; mask);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="8-islessorequal"><a class="markdownIt-Anchor" href="#8-islessorequal"></a> 8. isLessOrEqual</h3>
+<p>本题需要分为两种情况，两个数异号和同号，</p>
+<p><em>异号</em>的情况是如果相减会溢出，我们通过符号位的特点判断结果，观察发现，异号时结果和x的符号位同步</p>
+<p><em>同号</em>的情况相减判断符号位即可，这里的技巧是由于0和正数的符号位相同，因此采用<code>y - x &gt;= 0</code>判断会简化过程</p>
+<p>最后将两种情况通过掩码合并。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * isLessOrEqual - if x &lt;= y  then return 1, else return 0 </span></span><br><span class="line"><span class="comment"> *   Example: isLessOrEqual(4,5) = 1.</span></span><br><span class="line"><span class="comment"> *   Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 24</span></span><br><span class="line"><span class="comment"> *   Rating: 3</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">isLessOrEqual</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123;</span><br><span class="line">  <span class="comment">//符号位</span></span><br><span class="line">  <span class="type">int</span> s1 = x &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  <span class="type">int</span> s2 = y &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  <span class="comment">//s1 == s2 ? 1 : 0</span></span><br><span class="line">  <span class="type">int</span> mask = !(s1 ^ s2);</span><br><span class="line">  <span class="comment">// y - x</span></span><br><span class="line">  <span class="type">int</span> diff = y + (~x) + <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// y - x &gt;= 0 ? 1 : 0</span></span><br><span class="line">  <span class="type">int</span> flag2 = !(diff &gt;&gt; <span class="number">31</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (mask &amp; flag2) | ((!mask) &amp; (s1 &amp; <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="9-logicalneg"><a class="markdownIt-Anchor" href="#9-logicalneg"></a> 9. logicalNeg</h3>
+<p>本题需要充分利用符号位，由于最终需要实现的结果是逻辑非，如何识别出0就十分关键。在<code>allOddBits</code>一题最后我们通过为<code>-1 + 1</code>和<code>0 + 1</code>实现能让全1转换为0，全0转换为1的方法，本题同样借鉴这个思路。而0的特点是，其补码和就是其本身，具有同样特性的还有<code>0x80000000</code>(也就是前面找到的<em>最小数</em>），通过观察发现他们的区别在于<em>最小数</em>最小数和其补数做或运算后最高位为1，而0做相同运算后结果为0。再利用其符号右移的特性，能构造出需要的<code>0xAAAAAAAA</code>(全1)或<code>0</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * logicalNeg - implement the ! operator, using all of </span></span><br><span class="line"><span class="comment"> *              the legal operators except !</span></span><br><span class="line"><span class="comment"> *   Examples: logicalNeg(3) = 0, logicalNeg(0) = 1</span></span><br><span class="line"><span class="comment"> *   Legal ops: ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *   Max ops: 12</span></span><br><span class="line"><span class="comment"> *   Rating: 4 </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">logicalNeg</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> tag = x | (~x + <span class="number">1</span>);</span><br><span class="line">  <span class="comment">// 0xaaaaaaaa or 0</span></span><br><span class="line">  <span class="type">int</span> s = tag &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  <span class="comment">// 0 or 1</span></span><br><span class="line">  <span class="keyword">return</span> s + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="10-howmanybits"><a class="markdownIt-Anchor" href="#10-howmanybits"></a> 10. howManyBits</h3>
+<p>首先我们可以通过给出的几组示例发现，对于任何数，相当于查看其原码表示的最小位数，我们可以先将负数转化为于之对应的补数，两者的最小表示位数相同，计算后记作<code>y</code>。</p>
+<p>接着我们利用二进制数的表示思路来处理，也就是说，我们可以通过16、8、4、2、1这几个数表示1到31的任意数字，也就意味我们只要验证处理这几次就可以表示出位数来</p>
+<p>处理时有技巧，我们从利用能取大的先取大的原则，不断缩小y(进行移位),如果不能移位则用小数再试。具体见代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* howManyBits - return the minimum number of bits required to represent x in</span></span><br><span class="line"><span class="comment"> *             two&#x27;s complement</span></span><br><span class="line"><span class="comment"> *  Examples: howManyBits(12) = 5</span></span><br><span class="line"><span class="comment"> *            howManyBits(298) = 10</span></span><br><span class="line"><span class="comment"> *            howManyBits(-5) = 4</span></span><br><span class="line"><span class="comment"> *            howManyBits(0)  = 1</span></span><br><span class="line"><span class="comment"> *            howManyBits(-1) = 1</span></span><br><span class="line"><span class="comment"> *            howManyBits(0x80000000) = 32</span></span><br><span class="line"><span class="comment"> *  Legal ops: ! ~ &amp; ^ | + &lt;&lt; &gt;&gt;</span></span><br><span class="line"><span class="comment"> *  Max ops: 90</span></span><br><span class="line"><span class="comment"> *  Rating: 4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">howManyBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">   <span class="type">int</span> mask, y, tag16, tag8, tag4, tag2, tag1, has16bit, has8bit, has4bit, has2bit, has1bit;</span><br><span class="line">  <span class="comment">//mask = x &lt; 0 ? 0xfffffffff : 0</span></span><br><span class="line">  mask = (x &gt;&gt; <span class="number">31</span>);</span><br><span class="line">  <span class="comment">//为负数去反</span></span><br><span class="line">  y = mask &amp; (~x) | (~mask) &amp; x;</span><br><span class="line">  <span class="comment">//判断是否满足16+1位 ? 1 : 0</span></span><br><span class="line">  tag16 = !!(y &gt;&gt; <span class="number">16</span>);</span><br><span class="line">  has16bit = tag16 &lt;&lt; <span class="number">4</span>;</span><br><span class="line">  y = y &gt;&gt; has16bit;</span><br><span class="line">  <span class="comment">//判断是否满足8位 ? 1 : 0</span></span><br><span class="line">  tag8 = !!(y &gt;&gt; <span class="number">8</span>);</span><br><span class="line">  has8bit = (tag8 &lt;&lt; <span class="number">3</span>);</span><br><span class="line">  y = y &gt;&gt; has8bit;</span><br><span class="line">  <span class="comment">//判断是否满足4位 ? 1 : 0</span></span><br><span class="line">  tag4 = !!(y &gt;&gt; <span class="number">4</span>);</span><br><span class="line">  has4bit = tag4 &lt;&lt; <span class="number">2</span>;</span><br><span class="line">  y = y &gt;&gt; has4bit;</span><br><span class="line">  <span class="comment">//判断是否满足2位 ? 1 : 0</span></span><br><span class="line">  tag2 = !!(y &gt;&gt; <span class="number">2</span>);</span><br><span class="line">  has2bit = tag2 &lt;&lt; <span class="number">1</span>;</span><br><span class="line">  y = y &gt;&gt; has2bit;</span><br><span class="line">  <span class="comment">//判断是否满足1位 ? 1 : 0</span></span><br><span class="line">  tag1 = !!(y &gt;&gt; <span class="number">1</span>);</span><br><span class="line">  has1bit = tag1 &lt;&lt; <span class="number">1</span>;</span><br><span class="line">  y = y &gt;&gt; has1bit;</span><br><span class="line">  <span class="keyword">return</span> has16bit + has8bit + has4bit + has2bit + has1bit + y + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此10道整数问题结束</p>
+<h2 id="浮点数规则细节"><a class="markdownIt-Anchor" href="#浮点数规则细节"></a> 浮点数规则细节</h2>
+<h3 id="可以使用"><a class="markdownIt-Anchor" href="#可以使用"></a> 可以使用</h3>
+<ol>
+<li>可以使用循环和条件控制</li>
+<li>使用<code>int</code>和<code>unsigned</code>，并可以使用任何运算符号</li>
+</ol>
+<h3 id="禁止使用-2"><a class="markdownIt-Anchor" href="#禁止使用-2"></a> 禁止使用</h3>
+<ol>
+<li>宏</li>
+<li>定义或调用函数</li>
+<li>使用非<code>int</code>和<code>unsigned</code>类型的数据</li>
+<li>使用任何浮点运算符号</li>
+</ol>
+<h2 id="浮点数具体题解"><a class="markdownIt-Anchor" href="#浮点数具体题解"></a> 浮点数具体题解</h2>
+<h3 id="1-floatscale2"><a class="markdownIt-Anchor" href="#1-floatscale2"></a> 1. floatScale2</h3>
+<p>只要熟悉浮点的规则就可以模拟出这个过程。</p>
+<p>首先处理<strong>特殊情况</strong>（INF,NAN），其特点为<code>M</code>为<code>0xff</code>，此时返回这个数即可。</p>
+<p>然后处理<strong>非标准数</strong>，需要确定是否会变成标准数，只要看<code>E</code>是否超过<code>0x7fffff</code>（也就是E所能表示的最大值即可）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * floatScale2 - Return bit-level equivalent of expression 2*f for</span></span><br><span class="line"><span class="comment"> *   floating point argument f.</span></span><br><span class="line"><span class="comment"> *   Both the argument and result are passed as unsigned int&#x27;s, but</span></span><br><span class="line"><span class="comment"> *   they are to be interpreted as the bit-level representation of</span></span><br><span class="line"><span class="comment"> *   single-precision floating point values.</span></span><br><span class="line"><span class="comment"> *   When argument is NaN, return argument</span></span><br><span class="line"><span class="comment"> *   Legal ops: Any integer/unsigned operations incl. ||, &amp;&amp;. also if, while</span></span><br><span class="line"><span class="comment"> *   Max ops: 30</span></span><br><span class="line"><span class="comment"> *   Rating: 4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">unsigned</span> <span class="title function_">floatScale2</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> s, M, E, ans;</span><br><span class="line">  <span class="comment">//分解出s, M, E</span></span><br><span class="line">  s = uf &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  M = (uf &gt;&gt; <span class="number">23</span>) &amp; (<span class="number">0xff</span>);</span><br><span class="line">  E = uf &amp; (<span class="number">0x7fffff</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span>(M == <span class="number">0xff</span>)&#123; <span class="comment">// NaN、Infinity的情况</span></span><br><span class="line">    <span class="keyword">return</span> uf;</span><br><span class="line">  &#125;<span class="keyword">else</span> <span class="keyword">if</span>(M == <span class="number">0</span>)&#123; <span class="comment">//非规格化的情况</span></span><br><span class="line">    E = E &lt;&lt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(E &gt; <span class="number">0x7fffff</span>)&#123; <span class="comment">// 判断是否会变成规格化</span></span><br><span class="line">      M = M + <span class="number">1</span>;</span><br><span class="line">      E = E - <span class="number">0x800000</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;<span class="keyword">else</span>&#123; <span class="comment">//规格化的情况</span></span><br><span class="line">    M = M + <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  ans = (s&lt;&lt;<span class="number">31</span>) | (M &lt;&lt; <span class="number">23</span>) | E;</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="floatfloat2int"><a class="markdownIt-Anchor" href="#floatfloat2int"></a> floatFloat2Int</h3>
+<p>本题需要熟悉计算从浮点数转换为整数的规则，经过分析可以分为以下几种情况，</p>
+<ol>
+<li>特殊值 NaN 和 infinity 的情况，会返回<code>0x80000000u</code></li>
+<li>非标准化的情况会返回0，因为非标准化表示的是小于1的数</li>
+<li>实际阶数 a 满足<code>a &lt; 0</code>的数同样返回0，因为表示的数同样小于1</li>
+<li>实际阶数 a 满足<code>0 &lt;= a &lt;= 23</code>的情况，保留整数部分的数，具体计算规则见代码</li>
+<li>实际阶数 a 满足<code>a &gt; 23</code>，根据题目要求返回<code>0x80000000u</code></li>
+</ol>
+<p>其中非特殊情况还要加上符号位。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * floatFloat2Int - Return bit-level equivalent of expression (int) f</span></span><br><span class="line"><span class="comment"> *   for floating point argument f.</span></span><br><span class="line"><span class="comment"> *   Argument is passed as unsigned int, but</span></span><br><span class="line"><span class="comment"> *   it is to be interpreted as the bit-level representation of a</span></span><br><span class="line"><span class="comment"> *   single-precision floating point value.</span></span><br><span class="line"><span class="comment"> *   Anything out of range (including NaN and infinity) should return</span></span><br><span class="line"><span class="comment"> *   0x80000000u.</span></span><br><span class="line"><span class="comment"> *   Legal ops: Any integer/unsigned operations incl. ||, &amp;&amp;. also if, while</span></span><br><span class="line"><span class="comment"> *   Max ops: 30</span></span><br><span class="line"><span class="comment"> *   Rating: 4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">floatFloat2Int</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span> s, M, E ;</span><br><span class="line">  <span class="type">int</span> ans, a;</span><br><span class="line">  <span class="comment">//分解出s, M, E</span></span><br><span class="line">  s = uf &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  M = (uf &gt;&gt; <span class="number">23</span>) &amp; (<span class="number">0xff</span>);</span><br><span class="line">  E = uf &amp; (<span class="number">0x7fffff</span>);</span><br><span class="line">  a = M - <span class="number">127</span>; <span class="comment">//a表示实际的阶数</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(M == <span class="number">0xff</span>)&#123; <span class="comment">// NaN、Infinity的情况</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0x80000000</span>u;</span><br><span class="line">  &#125;<span class="keyword">else</span> <span class="keyword">if</span>(M == <span class="number">0</span>)&#123; <span class="comment">//非规格化的情况</span></span><br><span class="line">    ans = <span class="number">0</span>;</span><br><span class="line">  &#125;<span class="keyword">else</span> <span class="keyword">if</span>(a &lt; <span class="number">0</span>)&#123; <span class="comment">// 阶数为负的情况</span></span><br><span class="line">    ans = <span class="number">0</span>;</span><br><span class="line">  &#125;<span class="keyword">else</span> <span class="keyword">if</span> (a &lt;= <span class="number">23</span>)&#123; <span class="comment">//阶数符合整数规则的情况</span></span><br><span class="line">    ans = (E &gt;&gt; (<span class="number">23</span> - a)) + (<span class="number">1</span> &lt;&lt; a);</span><br><span class="line">    <span class="comment">// printf(&quot;0x%x %d %d\n&quot;,uf, ans, a+1);</span></span><br><span class="line">  &#125;<span class="keyword">else</span>&#123; <span class="comment">//阶数溢出的情况</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0x80000000</span>u;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>(s)&#123;</span><br><span class="line">     ans = -ans;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3floatpower2"><a class="markdownIt-Anchor" href="#3floatpower2"></a> 3.floatPower2</h3>
+<p><strong>一个小坑</strong> :出现<code>Timed out after 10 secs (probably infinite loop)</code>的情况，应该是虚拟机性能不佳，绝对时间的超时。可以使用参数<code>-T 20</code>将执行限制时间改为20秒即可。</p>
+<p>本题需要实现一个浮点数对2的幂计算，我们容易想到的是，浮点数本身计数方式就是以2的幂次形式，因此通过改变其中<code>M</code>的部分就可以实现大部分浮点运算。很容易想到的是当超出最大能表示数时返回<code>0x7f800000</code>（即无限大），当小到无法表示时，输出0。</p>
+<p>但是事实上如果仅仅考虑阶数的问题，其实并没有得到正确答案，<em>尽管这样做可以通过官方测试案例</em>，但并不是正确答案。其实不应只靠考虑标准浮点数，非标准浮点数同样也应该考虑在内，我们把<code>x + 121</code>记作<code>M</code>，也就是真实阶数数，当阶数在<code>0 =&lt; M &lt;= 23</code>时能用非标准浮点数表示，详见代码如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * floatPower2 - Return bit-level equivalent of the expression 2.0^x</span></span><br><span class="line"><span class="comment"> *   (2.0 raised to the power x) for any 32-bit integer x.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   The unsigned value that is returned should have the identical bit</span></span><br><span class="line"><span class="comment"> *   representation as the single-precision floating-point number 2.0^x.</span></span><br><span class="line"><span class="comment"> *   If the result is too small to be represented as a denorm, return</span></span><br><span class="line"><span class="comment"> *   0. If too large, return +INF.</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> *   Legal ops: Any integer/unsigned operations incl. ||, &amp;&amp;. Also if, while </span></span><br><span class="line"><span class="comment"> *   Max ops: 30 </span></span><br><span class="line"><span class="comment"> *   Rating: 4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">unsigned</span> <span class="title function_">floatPower2</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">unsigned</span>  ans; </span><br><span class="line">  <span class="comment">//真实的阶数</span></span><br><span class="line">  <span class="type">int</span> M = x + <span class="number">127</span>;</span><br><span class="line">  <span class="keyword">if</span>(M &gt; <span class="number">0xff</span>)&#123; <span class="comment">//表示无穷大</span></span><br><span class="line">    ans = <span class="number">0x7f800000</span>;</span><br><span class="line">  &#125;<span class="keyword">else</span> <span class="keyword">if</span>(M  &gt; <span class="number">0</span>)&#123; <span class="comment">// 表示在标准浮点数表示的部分</span></span><br><span class="line">    ans = M &lt;&lt; <span class="number">23</span>;</span><br><span class="line">  &#125;<span class="keyword">else</span> <span class="keyword">if</span>(M &gt; <span class="number">-23</span>)&#123; <span class="comment">// 表示在非标准浮点数表示的部分</span></span><br><span class="line">    ans = <span class="number">1</span> &lt;&lt; (M + <span class="number">22</span>);</span><br><span class="line">  &#125;<span class="keyword">else</span>&#123; <span class="comment">// 小于浮点数表示的部分</span></span><br><span class="line">    ans = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了验证函数的正确性，我写了一个验证程序<code>mytest.c</code>在项目目录下简单测试</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;tests.c&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;bits.c&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="comment">//每种情况的测试数据</span></span><br><span class="line"><span class="type">int</span> test_data[] = &#123;<span class="number">0xfff</span>, <span class="number">12</span> - <span class="number">127</span>, <span class="number">0</span> - <span class="number">127</span>, <span class="number">-20</span> - <span class="number">127</span> , <span class="number">-23</span> - <span class="number">127</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">  <span class="type">int</span> size = <span class="keyword">sizeof</span>(test_data) / <span class="keyword">sizeof</span>(<span class="type">int</span>);</span><br><span class="line">  <span class="comment">//重点测试数据</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">-50</span>; i &lt; <span class="number">100</span>; ++i)&#123;</span><br><span class="line">    <span class="type">unsigned</span> a, b;</span><br><span class="line">    a = test_floatPower2(i<span class="number">-127</span>);</span><br><span class="line">    b = floatPower2(i - <span class="number">127</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;0x%u 0x%u\n&quot;</span>, a, b);</span><br><span class="line">    assert(a == b);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//自定数据测试</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; size ; ++i)&#123;</span><br><span class="line">    <span class="type">unsigned</span> a, b;</span><br><span class="line">    a = test_floatPower2(i);</span><br><span class="line">    b = floatPower2(i);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;0x%u 0x%u\n&quot;</span>, a, b);</span><br><span class="line">    assert(a == b);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过<code>gcc -m32 -o mytest mytest.c</code>编译后并执行<code>./mytest</code>。结果没有<code>abort</code>，一定程度验证正确性。</p>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<p>最后附上最终测试结果<br />
+<img src="https://pic4.zhimg.com/80/v2-35accbab920239a11b5d3bd2a11920ad.png" alt="Image" /></p>
+<p>陆陆续续用了一周时间完成Lab1，我认为对计算机系统级的数据处理方式和技巧都有所学习，其中很多答案可能不是最优答案，欢迎大家留言讨论，共同学习。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://lcjd99.github.io/Course/csapp/Lab1/" title="CSAPP深入理解计算机系统 Lab1(Data Lab) 详解" target="_blank" rel="external">https://lcjd99.github.io/Course/csapp/Lab1/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/LCJD99" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/LCJD99" target="_blank"><span class="text-dark">凌晨九点</span><small class="ml-1x">CS Student</small></a></h3>
+        <div></div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Course/csapp/Lab2/" title="CSAPP深入理解计算机系统 Lab2(bomb Lab) 详解"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a>
+    </li>
+    
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

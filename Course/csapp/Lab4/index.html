@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解 | LCJD BLOG# 页面title</title>
+  <meta name="description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。   实验说明 在官方网站上其实有两个版本的architecture Lab，这里我们使用的是CSAPP 3e的实验。 本实验通过自己动手写汇编代码，自己设计CPU的执行过程，优化执行过程从而对计算机中CPU执行过程和流水线等知识有更深刻的理解，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解">
+<meta property="og:url" content="https://lcjd99.github.io/Course/csapp/Lab4/index.html">
+<meta property="og:site_name" content="凌晨九点空间">
+<meta property="og:description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。   实验说明 在官方网站上其实有两个版本的architecture Lab，这里我们使用的是CSAPP 3e的实验。 本实验通过自己动手写汇编代码，自己设计CPU的执行过程，优化执行过程从而对计算机中CPU执行过程和流水线等知识有更深刻的理解，">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-10-25T14:51:47.000Z">
+<meta property="article:modified_time" content="2024-04-12T15:35:52.341Z">
+<meta property="article:author" content="凌晨九点">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://lcjd99.github.io/Course/csapp/Lab4/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    <link href="//cdn.jsdelivr.net/npm/katex@0.9.0/dist/katex.min.css" rel="stylesheet">
+  
+  
+  
+  
+<meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="凌晨九点空间" type="application/atom+xml">
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/LCJD99" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">凌晨九点</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">CS Student</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">Board</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CS61C/">CS61C</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/CSAPP/">CSAPP</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">others</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computer-Organization/" rel="tag">Computer Organization</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-Network/" rel="tag">Linux Network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/utils/" rel="tag">utils</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/C/" style="font-size: 14px;">C</a> <a href="/tags/Computer-Organization/" style="font-size: 13px;">Computer Organization</a> <a href="/tags/Linux-Network/" style="font-size: 13px;">Linux Network</a> <a href="/tags/utils/" style="font-size: 13px;">utils</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Archive</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a>
+              </p>
+              <p class="item-title">
+                <a href="/Postgraduate/CS/Organization/Lecture2/" class="title">【考研】计组 （二）： 数据的表示和运算</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-12T14:51:47.000Z" itemprop="datePublished">2024-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a>
+              </p>
+              <p class="item-title">
+                <a href="/Linux/concurrent-in-linux/" class="title">Linux中对网络并发处理的技术</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-10T09:15:47.000Z" itemprop="datePublished">2024-04-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/git/">git</a>
+              </p>
+              <p class="item-title">
+                <a href="/utils/git-1/" class="title">git 入门教程（一）：基本用法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-09T14:50:47.000Z" itemprop="datePublished">2024-04-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/others/">others</a>
+              </p>
+              <p class="item-title">
+                <a href="/others/c-format-output/" class="title">C语言格式化输出问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/CS61C/">CS61C</a>
+              </p>
+              <p class="item-title">
+                <a href="/Course/cs61c/Lab2/" class="title">【CS61C】Lab2 实验解析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Course/csapp/Lab4" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Course/csapp/Lab4/" class="article-date">
+	  <time datetime="2023-10-25T14:51:47.000Z" itemprop="datePublished">2023-10-25</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/CSAPP/">CSAPP</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/C/" rel="tag">C</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Course/csapp/Lab4/#comments" class="article-comment-link">Comments</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 1.8k(words)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 7(minutes)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。</p>
+</blockquote>
+<h2 id="实验说明"><a class="markdownIt-Anchor" href="#实验说明"></a> 实验说明</h2>
+<p>在官方网站上其实有两个版本的architecture Lab，这里我们使用的是<code>CSAPP 3e</code>的实验。</p>
+<p>本实验通过自己动手写汇编代码，自己设计CPU的执行过程，优化执行过程从而对计算机中CPU执行过程和流水线等知识有更深刻的理解，我认为是目前几个实验中最灵活的一个。</p>
+<p>具体实验环境的搭建在<a target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/3e/archlab.pdf">实验手册</a>中都有讲解，同时还有一个关于<code>Y86</code>模拟器的使用说明，都在下载的项目目录下有。</p>
+<p><strong>特别说明：本实验要求使用Y86的汇编语言，需要参考CSAPP第4章的相关内容学习后再动手编写。</strong></p>
+<h2 id="实验具体流程"><a class="markdownIt-Anchor" href="#实验具体流程"></a> 实验具体流程</h2>
+<h3 id="part-a"><a class="markdownIt-Anchor" href="#part-a"></a> Part A</h3>
+<p>根据实验说明，我们需要实现在<code>example.c</code>中三个函数的<code>Y86-64</code>版本的汇编代码，在编写汇编代码前，需要简要梳理一下<code>Y86-64</code>的语法规则，这里建议详细阅读原书的4.1章节，我只对关键部分进行说明：</p>
+<ol>
+<li>通用寄存器有15个(没有<code>%15</code>)</li>
+<li>指令集设计如下图</li>
+</ol>
+<p>![指令集](/Users/lcjd/Library/Application Support/typora-user-images/image-20231109164413862.png)</p>
+<p>在原书的4.1.5节对一个完整的汇编代码有详细的介绍，这里就不过多说明。在本实验中有一部分代码包括栈的设置、测试数据初始化的部分是共用的代码，我将其写在这里。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">  .pos 0</span><br><span class="line">  irmovq stack, %rsp</span><br><span class="line">  call main</span><br><span class="line">  halt</span><br><span class="line"></span><br><span class="line">  .align 8</span><br><span class="line">ele1:</span><br><span class="line">  .quad 0x00a</span><br><span class="line">  .quad ele2</span><br><span class="line">ele2:</span><br><span class="line">  .quad 0x0b0</span><br><span class="line">  .quad ele3</span><br><span class="line">ele3:</span><br><span class="line">  .quad 0xc00</span><br><span class="line">  .quad 0 </span><br><span class="line">main:</span><br><span class="line">  irmovq ele1, %rdi</span><br><span class="line">  # call the function</span><br><span class="line">  call func</span><br><span class="line">  ret</span><br><span class="line">  </span><br><span class="line"># the positon insert function</span><br><span class="line"></span><br><span class="line">  .pos 0x200</span><br><span class="line">stack:</span><br></pre></td></tr></table></figure>
+<h4 id="sumys"><a class="markdownIt-Anchor" href="#sumys"></a> sum.ys</h4>
+<p>这里需要写一个链表元素值求和的汇编代码，并给出测试数据。具体编写思路只需要按照c代码对应翻译即可</p>
+<p>函数部分代码如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">sum_list:</span><br><span class="line">  irmovq $8, %r8</span><br><span class="line">  irmovq $0, %rax</span><br><span class="line">  andq %rdi, %rdi</span><br><span class="line">  jmp test</span><br><span class="line">loop:</span><br><span class="line">  mrmovq (%rdi), %r10</span><br><span class="line">  addq %r10, %rax</span><br><span class="line">  addq %r8, %rdi</span><br><span class="line">  mrmovq (%rdi), %rdi</span><br><span class="line">  andq %rdi, %rdi</span><br><span class="line">test:</span><br><span class="line">  jne loop</span><br><span class="line">  ret</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>代码中需要说明的是由于<code>y86_64</code>中没有立即数的加法运算，需要我们将需要运算的数存放在寄存器中再进行寄存器的加法运算。</p>
+<p>将这部分代码加入公共代码的部分后结果保存在<code>sum.ys</code>中。调用<code>make sum.yo</code>通过汇编器将代码编译为可执行程序<code>sum.yo</code>，然后调用<code>./yis sum.yo</code></p>
+<p>结果如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ ./yis sum.yo</span><br><span class="line">Stopped <span class="keyword">in</span> 30 steps at PC = 0x13.  Status <span class="string">&#x27;HLT&#x27;</span>, CC Z=1 S=0 O=0</span><br><span class="line">Changes to registers:</span><br><span class="line">%rax:   0x0000000000000000      0x0000000000000cba</span><br><span class="line">%rsp:   0x0000000000000000      0x0000000000000200</span><br><span class="line">%r8:    0x0000000000000000      0x0000000000000008</span><br><span class="line">%r10:   0x0000000000000000      0x0000000000000c00</span><br><span class="line"></span><br><span class="line">Changes to memory:</span><br><span class="line">0x01f0: 0x0000000000000000      0x000000000000005b</span><br><span class="line">0x01f8: 0x0000000000000000      0x0000000000000013</span><br></pre></td></tr></table></figure>
+<p>通过<code>rax</code>的验证我们知道，程序正确执行。</p>
+<h4 id="rsumys"><a class="markdownIt-Anchor" href="#rsumys"></a> rsum.ys</h4>
+<p>递归无法像迭代一样完全翻译程序，因为递归程序在汇编代码中需要维护递归栈，但是我们不需要将所有当前变量都保存在栈中，根据需求我们只需要把当前结点的值保存在栈中,因此只需要为每次递归分配<code>8B</code>的空间即可，并和递归调用的返回值相加即可。</p>
+<p>函数部分代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">sum_list:</span><br><span class="line">  irmovq $8, %r8</span><br><span class="line">  irmovq $0, %rax</span><br><span class="line">  andq %rdi, %rdi</span><br><span class="line">  jmp test</span><br><span class="line">loop:</span><br><span class="line">  mrmovq (%rdi), %r10</span><br><span class="line">  addq %r10, %rax</span><br><span class="line">  addq %r8, %rdi</span><br><span class="line">  mrmovq (%rdi), %rdi</span><br><span class="line">  andq %rdi, %rdi</span><br><span class="line">test:</span><br><span class="line">  jne loop</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
+<p>执行同样的测试结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ ./yis rsum.yo</span><br><span class="line">Stopped <span class="keyword">in</span> 48 steps at PC = 0x13.  Status <span class="string">&#x27;HLT&#x27;</span>, CC Z=0 S=0 O=0</span><br><span class="line">Changes to registers:</span><br><span class="line">%rax:   0x0000000000000000      0x0000000000000cba</span><br><span class="line">%rsp:   0x0000000000000000      0x0000000000000200</span><br><span class="line">%r8:    0x0000000000000000      0x0000000000000008</span><br><span class="line">%r10:   0x0000000000000000      0x0000000000000c00</span><br><span class="line">%r11:   0x0000000000000000      0x000000000000000a</span><br><span class="line"></span><br><span class="line">Changes to memory:</span><br><span class="line">0x01c0: 0x0000000000000000      0x000000000000009c</span><br><span class="line">0x01c8: 0x0000000000000000      0x0000000000000c00</span><br><span class="line">0x01d0: 0x0000000000000000      0x000000000000009c</span><br><span class="line">0x01d8: 0x0000000000000000      0x00000000000000b0</span><br><span class="line">0x01e0: 0x0000000000000000      0x000000000000009c</span><br><span class="line">0x01e8: 0x0000000000000000      0x000000000000000a</span><br><span class="line">0x01f0: 0x0000000000000000      0x000000000000005b</span><br><span class="line">0x01f8: 0x0000000000000000      0x0000000000000013</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>验证<code>rax</code>的结果说明程序正确执行。</p>
+<h4 id="copyys"><a class="markdownIt-Anchor" href="#copyys"></a> copy.ys</h4>
+<p>这里只需要将三个参数传入即可，执行过程逻辑并不困难。具体代码如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">main:</span><br><span class="line">  irmovq src, %rdi</span><br><span class="line">  irmovq dest, %rsi</span><br><span class="line">  irmovq $3, %rdx</span><br><span class="line">  call copy_block</span><br><span class="line">  ret</span><br><span class="line"></span><br><span class="line">copy_block:</span><br><span class="line">  xorq %rax, %rax</span><br><span class="line">  irmovq $8, %r8</span><br><span class="line">  irmovq $1, %r11</span><br><span class="line">L2:</span><br><span class="line">  andq %rdx, %rdx</span><br><span class="line">  je L3</span><br><span class="line">  mrmovq (%rdi), %r9</span><br><span class="line">  rmmovq %r9, (%rsi)</span><br><span class="line">  subq %r11, %rdx</span><br><span class="line">  xorq %r9, %rax</span><br><span class="line">  addq %r8, %rdi</span><br><span class="line">  addq %r8, %rsi</span><br><span class="line">  jmp L2</span><br><span class="line">L3:</span><br><span class="line">  halt</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
+<p>测试如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ ./yis copy.yo</span><br><span class="line">Stopped <span class="keyword">in</span> 39 steps at PC = 0xb6.  Status <span class="string">&#x27;HLT&#x27;</span>, CC Z=1 S=0 O=0</span><br><span class="line">Changes to registers:</span><br><span class="line">%rax:   0x0000000000000000      0x0000000000000cba</span><br><span class="line">%rsp:   0x0000000000000000      0x00000000000001f0</span><br><span class="line">%rsi:   0x0000000000000000      0x0000000000000048</span><br><span class="line">%rdi:   0x0000000000000000      0x0000000000000030</span><br><span class="line">%r8:    0x0000000000000000      0x0000000000000008</span><br><span class="line">%r9:    0x0000000000000000      0x0000000000000c00</span><br><span class="line">%r11:   0x0000000000000000      0x0000000000000001</span><br><span class="line"></span><br><span class="line">Changes to memory:</span><br><span class="line">0x0030: 0x0000000000000111      0x000000000000000a</span><br><span class="line">0x0038: 0x0000000000000222      0x00000000000000b0</span><br><span class="line">0x0040: 0x0000000000000333      0x0000000000000c00</span><br><span class="line">0x01f0: 0x0000000000000000      0x000000000000006f</span><br><span class="line">0x01f8: 0x0000000000000000      0x0000000000000013</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>看到内存中的变化过程和返回值<code>rax</code>的校验码验证实验结果正确。</p>
+<h3 id="partb"><a class="markdownIt-Anchor" href="#partb"></a> PartB</h3>
+<p>这部分的实验是要为SEQ处理器添加一条指令<code>iaddq</code>，这里需要修改hcl文件中的控制逻辑，使其满足需求的功能。这个部分比较容易，因为框架都已经写好，我们只需要将<code>iaddq</code>添加到相应的部分即可。</p>
+<p>首先我们需要思考一下<code>iaddq</code>需要实现的动作，根据下图我们看到该指令的构成，对我们解析指令非常重要。</p>
+<p>![iddq](/Users/lcjd/Library/Application Support/typora-user-images/image-20231109191110782.png)</p>
+<p>我们可以以<code>OPq</code>和<code>irmovq</code>的指令作为案例可以设计出<code>iaddq</code>在各个步骤的执行如下(其中M_x,x表示取xByte)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Fetch：</span><br><span class="line">	icode:ifun &lt;- M_1[PC]</span><br><span class="line">	rA:rB &lt;- M_1[PC+1]</span><br><span class="line">	ValC &lt;- M_8[PC+2]</span><br><span class="line">	ValP &lt;- PC + 10</span><br><span class="line">Decode:</span><br><span class="line">	valB &lt;- R[rB]</span><br><span class="line">Execute:</span><br><span class="line">	ValE &lt;- ValC + ValB</span><br><span class="line">	Set CC</span><br><span class="line">Memory：</span><br><span class="line"></span><br><span class="line">Write back:</span><br><span class="line">	R[rB] &lt;- valE</span><br><span class="line">PC update:</span><br><span class="line">	PC &lt;- valP</span><br></pre></td></tr></table></figure>
+<p>根据以上可以修改<code>seq-full.hcl</code></p>
+<p>1、在<code>Symbolic representation of Y86-64 Instruction Codes</code>的部分添加如下代码，用于表示这个指令的符号表示。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wordsig IIADDQ	<span class="string">&#x27;I_IADDQ&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>2、然后以此添加<code>IIADDQ</code>到 <code>instr_valid</code> ， <code>need_regids</code> ， <code>need_valC</code>， <code>srcA:rA</code> ， <code>srcB:rB</code>， <code>dstE:rB(second)</code>， <code>aluA:valC</code>，<code>aluB:valB</code>， <code>setcc</code></p>
+<p>添加完后执行如下: <code>./ssim -t ../y86-code/asumi.yo</code> (记得先在<code>../y86-code</code>目录下<code>make</code>一下)，简单测试后，执行<code>cd ../y86-code; make testssim</code>。结果如下：</p>
+<p>![image-20231109195158473](/Users/lcjd/Library/Application Support/typora-user-images/image-20231109195158473.png)</p>
+<h3 id="part3"><a class="markdownIt-Anchor" href="#part3"></a> Part3</h3>
+<p>在这个部分我们需要优化<code>ncopy</code>函数在流水线中的执行效率，我们可以通过修改添加新的指令在系统中，也可以通过修改指令的执行顺序等方式，提供了很大的自由度，这需要我们充分了解计算机系统的指令级优化策略。这个部分也是这次实验的重点。</p>
+<p>在没有任何优化时执行<code>./benchmark.pl</code>后的平均时间为<code>15.18</code>，接下来我们就要开始优化这个流水线</p>
+<h4 id="1-添加iaddr"><a class="markdownIt-Anchor" href="#1-添加iaddr"></a> 1. 添加iaddr</h4>
+<p>首先可以把<code>Part2</code>中的<code>iaddr</code>，这样可以减少指令数，提升执行效率，修改<code>pipe-full.hcl</code>的过程大同小异，这里就不赘述了，以下是对<code>ncopy.ys</code>的修改</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">	xorq %rax,%rax		# count = 0;</span><br><span class="line">	andq %rdx,%rdx		# len &lt;= 0?</span><br><span class="line">	jle Done		# if so, goto Done:</span><br><span class="line"> </span><br><span class="line">Loop:	</span><br><span class="line">  mrmovq (%rdi), %r10	# read val from src...</span><br><span class="line">	rmmovq %r10, (%rsi)	# ...and store it to dst</span><br><span class="line">	andq %r10, %r10		# val &lt;= 0?</span><br><span class="line">	jle Npos		# if so, goto Npos:</span><br><span class="line">	iaddq $1, %rax		# count++</span><br><span class="line">Npos:	</span><br><span class="line">	iaddq $-1, %rdx		# len--</span><br><span class="line">	iaddq $8, %rdi		# src++</span><br><span class="line">	iaddq $8, %rsi		# dst++</span><br><span class="line">	andq %rdx,%rdx		# len &gt; 0?</span><br><span class="line">	jg Loop			# if so, goto Loop:</span><br></pre></td></tr></table></figure>
+<p>经过修改并验证正确性后测试结果为<code>Average CPE  12.70</code></p>
+<h4 id="2-根据分支修改代码"><a class="markdownIt-Anchor" href="#2-根据分支修改代码"></a> 2. 根据分支修改代码</h4>
+<p>已知如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Predict next value of PC</span><br><span class="line">word f_predPC = [</span><br><span class="line">	f_icode in &#123; IJXX, ICALL &#125; : f_valC;</span><br><span class="line">	1 : f_valP;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>我们知道预测的方向是条件分支，而我们的代码中</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://lcjd99.github.io/Course/csapp/Lab4/" title="CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解" target="_blank" rel="external">https://lcjd99.github.io/Course/csapp/Lab4/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/LCJD99" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/LCJD99" target="_blank"><span class="text-dark">凌晨九点</span><small class="ml-1x">CS Student</small></a></h3>
+        <div></div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/others/c-and-memory/" title="重新学习C语言内存管理"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Course/csapp/Lab3/" title="CSAPP深入理解计算机系统 Lab3(attack Lab) 详解"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
