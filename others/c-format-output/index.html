@@ -18,20 +18,20 @@
   
   
   <title>C语言格式化输出问题 | LCJD BLOG# 页面title</title>
-  <meta name="description" content="在日常使用中C语言时，对于命令行工具输出格式化控制非常重要，虽然每天都在用printf但是对其具体的使用还是很容易忘记，于是做如下总结 在 C 语言中，格式化打印主要通过 printf、sprintf、snprintf、fprintf 等函数实现，它们都使用格式字符串来指定输出数据的类型和格式。格式字符串由普通字符和格式指定符组成，格式指定符用来指定随后参数的打印方式。 常用的格式指定符： %d：">
+  <meta name="description" content="在日常使用中C语言时，对于命令行工具输出格式化控制非常重要，虽然每天都在用printf但是对其具体的使用还是很容易忘记，于是做如下总结 在 C 语言中，格式化打印主要通过 printf、sprintf、snprintf、fprintf 等函数实现，它们都使用格式字符串来指定输出数据的类型和格式。格式字符串由普通字符和格式指定符组成，格式指定符用来指定随后参数的打印方式。  常用的格式指定符：  %">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C语言格式化输出问题">
-<meta property="og:url" content="https://lcjd99.github.io/others/review-language/c-review/index.html">
+<meta property="og:url" content="https://lcjd99.github.io/others/c-format-output/index.html">
 <meta property="og:site_name" content="凌晨九点空间">
-<meta property="og:description" content="在日常使用中C语言时，对于命令行工具输出格式化控制非常重要，虽然每天都在用printf但是对其具体的使用还是很容易忘记，于是做如下总结 在 C 语言中，格式化打印主要通过 printf、sprintf、snprintf、fprintf 等函数实现，它们都使用格式字符串来指定输出数据的类型和格式。格式字符串由普通字符和格式指定符组成，格式指定符用来指定随后参数的打印方式。 常用的格式指定符： %d：">
+<meta property="og:description" content="在日常使用中C语言时，对于命令行工具输出格式化控制非常重要，虽然每天都在用printf但是对其具体的使用还是很容易忘记，于是做如下总结 在 C 语言中，格式化打印主要通过 printf、sprintf、snprintf、fprintf 等函数实现，它们都使用格式字符串来指定输出数据的类型和格式。格式字符串由普通字符和格式指定符组成，格式指定符用来指定随后参数的打印方式。  常用的格式指定符：  %">
 <meta property="og:locale">
 <meta property="article:published_time" content="2024-04-04T14:51:47.000Z">
-<meta property="article:modified_time" content="2024-04-04T15:11:14.816Z">
+<meta property="article:modified_time" content="2024-04-10T09:12:21.579Z">
 <meta property="article:author" content="凌晨九点">
 <meta property="article:tag" content="C">
 <meta name="twitter:card" content="summary">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://lcjd99.github.io/others/review-language/c-review/index.html">
+  <link rel="canonical" href="https://lcjd99.github.io/others/c-format-output/index.html">
   
   
     <link rel="icon" href="/favicon.png" type="image/x-icon">
@@ -55,7 +55,7 @@
       
       <div class="profile-block text-center">
         <a id="avatar" href="https://github.com/LCJD99" target="_blank">
-          <img class="img-circle img-rotate" src="/images/avatar.png" width="200" height="200">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
         </a>
         <h2 id="name" class="hidden-xs hidden-sm">凌晨九点</h2>
         <h3 id="title" class="hidden-xs hidden-sm hidden-md">CS Student</h3>
@@ -117,26 +117,6 @@
           </a>
         </li>
         
-        
-        <li class="menu-item menu-item-categories">
-          <a href="/categories">
-            
-            <i class="icon icon-folder"></i>
-            
-            <span class="menu-title">Categories</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags">
-            
-            <i class="icon icon-tags"></i>
-            
-            <span class="menu-title">Tags</span>
-          </a>
-        </li>
-        
       </ul>
       
 	
@@ -170,7 +150,7 @@
   <div class="widget">
     <h3 class="widget-title">Categories</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CS61C/">CS61C</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">others</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CS61C/">CS61C</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">others</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -180,7 +160,7 @@
   <div class="widget">
     <h3 class="widget-title">Tags</h3>
     <div class="widget-body">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/utils/" rel="tag">utils</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computer-Organization/" rel="tag">Computer Organization</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux-Network/" rel="tag">Linux Network</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/utils/" rel="tag">utils</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -190,7 +170,7 @@
   <div class="widget">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget-body tagcloud">
-      <a href="/tags/C/" style="font-size: 14px;">C</a> <a href="/tags/JavaScript/" style="font-size: 13px;">JavaScript</a> <a href="/tags/utils/" style="font-size: 13px;">utils</a>
+      <a href="/tags/C/" style="font-size: 14px;">C</a> <a href="/tags/Computer-Organization/" style="font-size: 13px;">Computer Organization</a> <a href="/tags/Linux-Network/" style="font-size: 13px;">Linux Network</a> <a href="/tags/utils/" style="font-size: 13px;">utils</a>
     </div>
   </div>
 
@@ -199,7 +179,7 @@
   <div class="widget">
     <h3 class="widget-title">Archive</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a><span class="archive-list-count">6</span></li></ul>
     </div>
   </div>
 
@@ -215,10 +195,40 @@
             
             <div class="item-inner">
               <p class="item-category">
+                <a class="category-link" href="/categories/Linux/">Linux</a>
+              </p>
+              <p class="item-title">
+                <a href="/Linux/concurrent-in-linux/" class="title">Linux中对网络并发处理的技术</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-10T09:15:47.000Z" itemprop="datePublished">2024-04-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/git/">git</a>
+              </p>
+              <p class="item-title">
+                <a href="/utils/git-1/" class="title">git 入门教程（一）：基本用法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2024-04-09T14:50:47.000Z" itemprop="datePublished">2024-04-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
                 <a class="category-link" href="/categories/others/">others</a>
               </p>
               <p class="item-title">
-                <a href="/others/review-language/c-review/" class="title">C语言格式化输出问题</a>
+                <a href="/others/c-format-output/" class="title">C语言格式化输出问题</a>
               </p>
               <p class="item-date">
                 <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
@@ -233,7 +243,7 @@
                 <a class="category-link" href="/categories/CS61C/">CS61C</a>
               </p>
               <p class="item-title">
-                <a href="/CS61C/cs61c/Lab2/" class="title">【CS61C】Lab2 实验解析</a>
+                <a href="/Course/cs61c/Lab2/" class="title">【CS61C】Lab2 实验解析</a>
               </p>
               <p class="item-date">
                 <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
@@ -245,43 +255,13 @@
             
             <div class="item-inner">
               <p class="item-category">
-                <a class="category-link" href="/categories/CS61C/">CS61C</a>
+                <a class="category-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a>
               </p>
               <p class="item-title">
-                <a href="/CS61C/cs61c/C-and-memory/" class="title">重新学习C语言内存管理</a>
+                <a href="/Postgraduate/CS/Organization/Lecture2/" class="title">【考研】计组 （二）： 数据的表示和运算</a>
               </p>
               <p class="item-date">
-                <time datetime="2024-04-03T14:50:47.000Z" itemprop="datePublished">2024-04-03</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/Project/">Project</a>
-              </p>
-              <p class="item-title">
-                <a href="/Project/SEUForum-Stack/" class="title">SEUForum 技术栈</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2024-04-02T15:52:47.000Z" itemprop="datePublished">2024-04-02</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/test/">test</a>
-              </p>
-              <p class="item-title">
-                <a href="/test/hello-world/" class="title">Hello World</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2024-04-02T14:40:19.535Z" itemprop="datePublished">2024-04-02</time>
+                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
               </p>
             </div>
           </li>
@@ -299,7 +279,7 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-review-language/c-review" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-others/c-format-output" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
@@ -314,7 +294,7 @@
       <div class="article-meta">
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
-	<a href="/others/review-language/c-review/" class="article-date">
+	<a href="/others/c-format-output/" class="article-date">
 	  <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
 	</a>
 </span>
@@ -333,10 +313,10 @@
 
         
 
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/others/review-language/c-review/#comments" class="article-comment-link">Comments</a></span>
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/others/c-format-output/#comments" class="article-comment-link">Comments</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 803(words)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 802(words)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 3(minutes)</span>
@@ -348,22 +328,25 @@
       
         <p>在日常使用中C语言时，对于命令行工具输出格式化控制非常重要，虽然每天都在用<code>printf</code>但是对其具体的使用还是很容易忘记，于是做如下总结</p>
 <p>在 C 语言中，格式化打印主要通过 <code>printf</code>、<code>sprintf</code>、<code>snprintf</code>、<code>fprintf</code> 等函数实现，它们都使用格式字符串来指定输出数据的类型和格式。格式字符串由普通字符和格式指定符组成，格式指定符用来指定随后参数的打印方式。</p>
-<h3 id="常用的格式指定符："><a href="#常用的格式指定符：" class="headerlink" title="常用的格式指定符："></a>常用的格式指定符：</h3><ul>
+<h3 id="常用的格式指定符"><a class="markdownIt-Anchor" href="#常用的格式指定符"></a> 常用的格式指定符：</h3>
+<ul>
 <li><code>%d</code>：输出有符号十进制整数。</li>
 <li><code>%u</code>：输出无符号十进制整数。</li>
 <li><code>%x</code> 或 <code>%X</code>：输出十六进制整数，<code>%x</code> 输出小写字母，<code>%X</code> 输出大写字母。</li>
 <li><code>%o</code>：输出八进制整数。</li>
 <li><code>%f</code>：输出浮点数。</li>
 <li><code>%e</code> 或 <code>%E</code>：输出指数形式的浮点数，<code>%e</code> 使用小写 <code>e</code>，<code>%E</code> 使用大写 <code>E</code>。</li>
-<li><code>%g</code> 或 <code>%G</code>：输出浮点数，自动选择 <code>%f</code> 或 <code>%e</code>&#x2F;%<code>E</code> 的格式，取决于数值的大小。</li>
+<li><code>%g</code> 或 <code>%G</code>：输出浮点数，自动选择 <code>%f</code> 或 <code>%e</code>/%<code>E</code> 的格式，取决于数值的大小。</li>
 <li><code>%c</code>：输出单个字符。</li>
 <li><code>%s</code>：输出字符串。</li>
 <li><code>%p</code>：输出指针的值（十六进制表示）。</li>
 <li><code>%%</code>：输出一个百分号 <code>%</code>。</li>
 </ul>
 <p>除了上述基本的格式指定符，还可以在 <code>%</code> 和格式字符之间插入一些标志、宽度、精度等修饰符：</p>
-<h3 id="标志方式"><a href="#标志方式" class="headerlink" title="标志方式"></a>标志方式</h3><ul>
-<li><code>标志</code>：<ul>
+<h3 id="标志方式"><a class="markdownIt-Anchor" href="#标志方式"></a> 标志方式</h3>
+<ul>
+<li><code>标志</code>：
+<ul>
 <li><code>-</code>：左对齐输出。</li>
 <li><code>+</code>：输出数值的正负号。</li>
 <li><code> </code>（空格）：如果第一个字符不是正负号，则在该字符前添加一个空格。</li>
@@ -372,10 +355,13 @@
 </ul>
 </li>
 </ul>
-<h3 id="宽度和精度"><a href="#宽度和精度" class="headerlink" title="宽度和精度"></a>宽度和精度</h3><ul>
-<li><p><code>宽度</code>：指定输出字段的最小宽度。如果输出小于这个宽度，会在左边或右边填充空格或零（取决于是否使用了 <code>-</code> 或 <code>0</code> 标志）。</p>
+<h3 id="宽度和精度"><a class="markdownIt-Anchor" href="#宽度和精度"></a> 宽度和精度</h3>
+<ul>
+<li>
+<p><code>宽度</code>：指定输出字段的最小宽度。如果输出小于这个宽度，会在左边或右边填充空格或零（取决于是否使用了 <code>-</code> 或 <code>0</code> 标志）。</p>
 </li>
-<li><p><code>精度</code>：</p>
+<li>
+<p><code>精度</code>：</p>
 <ul>
 <li>对于 <code>%f</code>、<code>%e</code>、<code>%E</code>，精度表示小数点后的数字位数。</li>
 <li>对于 <code>%g</code>、<code>%G</code>，精度表示有效数字的最大位数。</li>
@@ -384,9 +370,10 @@
 </ul>
 </li>
 </ul>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> i = <span class="number">42</span>;</span><br><span class="line">    <span class="type">float</span> f = <span class="number">3.14159</span>;</span><br><span class="line">    <span class="type">char</span> s[] = <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Integer: %d\n&quot;</span>, i);            <span class="comment">// 基本整型输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Integer with width: %10d\n&quot;</span>, i); <span class="comment">// 宽度为10，右对齐</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Integer with width and zero padding: %010d\n&quot;</span>, i); <span class="comment">// 宽度为10，用零填充</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Float: %f\n&quot;</span>, f);              <span class="comment">// 基本浮点数输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Float with precision: %.2f\n&quot;</span>, f); <span class="comment">// 保留两位小数</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;String: %s\n&quot;</span>, s);             <span class="comment">// 字符串输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;String with precision: %.5s\n&quot;</span>, s); <span class="comment">// 只输出字符串的前5个字符</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<h3 id="例子"><a class="markdownIt-Anchor" href="#例子"></a> 例子</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> i = <span class="number">42</span>;</span><br><span class="line">    <span class="type">float</span> f = <span class="number">3.14159</span>;</span><br><span class="line">    <span class="type">char</span> s[] = <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Integer: %d\n&quot;</span>, i);            <span class="comment">// 基本整型输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Integer with width: %10d\n&quot;</span>, i); <span class="comment">// 宽度为10，右对齐</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Integer with width and zero padding: %010d\n&quot;</span>, i); <span class="comment">// 宽度为10，用零填充</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Float: %f\n&quot;</span>, f);              <span class="comment">// 基本浮点数输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Float with precision: %.2f\n&quot;</span>, f); <span class="comment">// 保留两位小数</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;String: %s\n&quot;</span>, s);             <span class="comment">// 字符串输出</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;String with precision: %.5s\n&quot;</span>, s); <span class="comment">// 只输出字符串的前5个字符</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="注意事项"><a class="markdownIt-Anchor" href="#注意事项"></a> 注意事项</h3>
+<ul>
 <li>确保格式指定符与提供的参数类型相匹配，否则可能会导致未定义的行为。</li>
 <li>使用 <code>%s</code> 输出字符串时，确保字符串以 null 结尾，否则可能会读取到不确定的数据。</li>
 <li>使用 <code>%</code> 打印百分号时，需要写成 <code>%%</code>。</li>
@@ -401,7 +388,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://lcjd99.github.io/others/review-language/c-review/" title="C语言格式化输出问题" target="_blank" rel="external">https://lcjd99.github.io/others/review-language/c-review/</a>
+      <a href="https://lcjd99.github.io/others/c-format-output/" title="C语言格式化输出问题" target="_blank" rel="external">https://lcjd99.github.io/others/c-format-output/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -416,7 +403,7 @@
     <figure class="media">
       <div class="media-left">
         <a href="https://github.com/LCJD99" target="_blank" class="img-burn thumb-sm visible-lg">
-          <img src="/images/avatar.png" class="img-rounded w-full" alt="">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
         </a>
       </div>
       <div class="media-body">
@@ -447,9 +434,13 @@
   
   <ul class="pager pull-left">
     
+    <li class="prev">
+      <a href="/utils/git-1/" title="git 入门教程（一）：基本用法"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a>
+    </li>
+    
     
     <li class="next">
-      <a href="/CS61C/cs61c/Lab2/" title="【CS61C】Lab2 实验解析"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="/Course/cs61c/Lab2/" title="【CS61C】Lab2 实验解析"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
