@@ -1,342 +1,256 @@
 <!DOCTYPE html>
-<html lang=zh>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-  <meta name="renderer" content="webkit">
-  <meta http-equiv="Cache-Control" content="no-transform" />
-  <meta http-equiv="Cache-Control" content="no-siteapp" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="format-detection" content="telephone=no,email=no,adress=no">
-  <!-- Color theme for statusbar -->
-  <meta name="theme-color" content="#000000" />
-  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
-  <meta http-equiv="window-target" content="_top" />
-  
-  
-  <title>CSAPP深入理解计算机系统 Lab3(attack Lab) 详解 | LCJD BLOG# 页面title</title>
-  <meta name="description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。   实验说明 本实验通过向两个程序中进行攻击已达到攻击目的，通过这个实验能了解到通过缓冲区溢出的方法攻击程序的方法，同时对汇编代码、GDB和OBJDUMP等工具以及代码在机器中执行的过程的理解有更深的理解。 在动手实验之前需要仔细阅读实验说明,">
-<meta property="og:type" content="article">
-<meta property="og:title" content="CSAPP深入理解计算机系统 Lab3(attack Lab) 详解">
-<meta property="og:url" content="https://lcjd99.github.io/Course/csapp/Lab3/index.html">
-<meta property="og:site_name" content="凌晨九点空间">
-<meta property="og:description" content="本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。   实验说明 本实验通过向两个程序中进行攻击已达到攻击目的，通过这个实验能了解到通过缓冲区溢出的方法攻击程序的方法，同时对汇编代码、GDB和OBJDUMP等工具以及代码在机器中执行的过程的理解有更深的理解。 在动手实验之前需要仔细阅读实验说明,">
-<meta property="og:locale">
-<meta property="og:image" content="https://pic4.zhimg.com/80/v2-217ebf4b5c8832f3762d154634397080.png">
-<meta property="og:image" content="https://pic4.zhimg.com/80/v2-6975107c9128a0bdfaa89c47fef8c7db.png">
-<meta property="article:published_time" content="2023-10-21T14:51:47.000Z">
-<meta property="article:modified_time" content="2024-04-12T15:34:46.881Z">
-<meta property="article:author" content="凌晨九点">
-<meta property="article:tag" content="C">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic4.zhimg.com/80/v2-217ebf4b5c8832f3762d154634397080.png">
-  <!-- Canonical links -->
-  <link rel="canonical" href="https://lcjd99.github.io/Course/csapp/Lab3/index.html">
-  
-  
-    <link rel="icon" href="/favicon.png" type="image/x-icon">
-  
-  
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="分享知识、分享经验、分享观点">
+    <meta name="author" content="凌晨九点">
+    
+    <title>
+        
+            CSAPP深入理解计算机系统 Lab3(attack Lab) 详解 |
+        
+        凌晨九点的世界
+    </title>
+    
 <link rel="stylesheet" href="/css/style.css">
 
-  
-    <link href="//cdn.jsdelivr.net/npm/katex@0.9.0/dist/katex.min.css" rel="stylesheet">
-  
-  
-  
-  
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"lcjd99.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"凌晨九点的世界","author":"凌晨九点","avatar":"/images/avatar.jpg","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":true,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":false,"hide_header":true},"home":{"announcement":null,"category":true,"tag":false,"post_datetime":"updated","post_datetime_format":"YYYY-MM-DD"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"valine","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.36"},"waline":{"server_url":null,"reaction":false,"version":"3.2.1"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2022,"word_count":false,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.3"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
 <meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="凌晨九点空间" type="application/atom+xml">
 </head>
 
 
-<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
-  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-  <div class="slimContent">
-    <div class="navbar-header">
-      
-      
-      <div class="profile-block text-center">
-        <a id="avatar" href="https://github.com/LCJD99" target="_blank">
-          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
-        </a>
-        <h2 id="name" class="hidden-xs hidden-sm">凌晨九点</h2>
-        <h3 id="title" class="hidden-xs hidden-sm hidden-md">CS Student</h3>
-        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanjing, China</small>
-      </div>
-      
-      <div class="search" id="search-form-wrap">
+<body>
+<div class="progress-bar-container">
+    
 
-    <form class="search-form sidebar-form">
-        <div class="input-group">
-            <input type="text" class="search-form-input form-control" placeholder="Search" />
-            <span class="input-group-btn">
-                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
-            </span>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               凌晨九点的世界
+            </a>
         </div>
-    </form>
-    <div class="ins-search">
-  <div class="ins-search-mask"></div>
-  <div class="ins-search-container">
-    <div class="ins-input-wrapper">
-      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
-      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-    </div>
-    <div class="ins-section-wrapper">
-      <div class="ins-section-container"></div>
-    </div>
-  </div>
-</div>
 
-
-</div>
-      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
     </div>
-    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
-      <ul class="nav navbar-nav main-nav ">
-        
-        
-        <li class="menu-item menu-item-home">
-          <a href="/.">
-            
-            <i class="icon icon-home-fill"></i>
-            
-            <span class="menu-title">Home</span>
-          </a>
-        </li>
-        
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives">
-            
-            <i class="icon icon-archives-fill"></i>
-            
-            <span class="menu-title">Archives</span>
-          </a>
-        </li>
-        
-      </ul>
-      
-	
-    <ul class="social-links">
-    	
-        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
-        
-    </ul>
 
-    </nav>
-  </div>
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
 </header>
 
-  
-    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
-  <div class="slimContent">
-    
-      <div class="widget">
-    <h3 class="widget-title">Board</h3>
-    <div class="widget-body">
-        <div id="board">
-            <div class="content">
-                
-            </div>
+
         </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        CSAPP深入理解计算机系统 Lab3(attack Lab) 详解
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar.jpg">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">凌晨九点</span>
+                                
+                                    <span class="author-badge">Lv2</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2023-10-21 22:51:47</span>
+            </span>
+
+            <span class="meta-info-item post-update-date">
+                <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                <span class="datetime" data-updated="Fri Apr 12 2024 23:34:46 GMT+0800">2024-04-12 23:34:46</span>
+            </span>
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/CSAPP/">CSAPP</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/C/">C</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
     </div>
+
+    
 </div>
 
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CS61C/">CS61C</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/CSAPP/">CSAPP</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">others</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a><span class="category-list-count">1</span></li></ul>
-    </div>
-  </div>
+                            </div>
+                        </div>
+                    </div>
+                
 
+                <div class="post-content keep-markdown-body ">
+                    
 
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget-body">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computer-Organization/" rel="tag">Computer Organization</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/utils/" rel="tag">utils</a><span class="tag-list-count">2</span></li></ul>
-    </div>
-  </div>
-
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget-body tagcloud">
-      <a href="/tags/C/" style="font-size: 14px;">C</a> <a href="/tags/Computer-Organization/" style="font-size: 13px;">Computer Organization</a> <a href="/tags/utils/" style="font-size: 13.5px;">utils</a>
-    </div>
-  </div>
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">Archive</h3>
-    <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">April 2024</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a><span class="archive-list-count">4</span></li></ul>
-    </div>
-  </div>
-
-
-    
-      
-  <div class="widget">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget-body">
-      <ul class="recent-post-list list-unstyled no-thumbnail">
-        
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/docker/">docker</a>
-              </p>
-              <p class="item-title">
-                <a href="/utils/docker/docker-1/" class="title">docker 入门教程（一）：基本用法</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2024-04-26T14:50:47.000Z" itemprop="datePublished">2024-04-26</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/git/">git</a>
-              </p>
-              <p class="item-title">
-                <a href="/utils/git/git-1/" class="title">git 入门教程（一）：基本用法</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2024-04-15T14:50:47.000Z" itemprop="datePublished">2024-04-15</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/%E8%80%83%E7%A0%94/">考研</a>
-              </p>
-              <p class="item-title">
-                <a href="/Postgraduate/CS/Organization/Lecture2/" class="title">【考研】计组 （二）： 数据的表示和运算</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2024-04-12T14:51:47.000Z" itemprop="datePublished">2024-04-12</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/others/">others</a>
-              </p>
-              <p class="item-title">
-                <a href="/others/c-format-output/" class="title">C语言格式化输出问题</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2024-04-04T14:51:47.000Z" itemprop="datePublished">2024-04-04</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="/categories/others/">others</a>
-              </p>
-              <p class="item-title">
-                <a href="/others/c-and-memory/" class="title">重新学习C语言内存管理</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2024-04-03T14:50:47.000Z" itemprop="datePublished">2024-04-03</time>
-              </p>
-            </div>
-          </li>
-          
-      </ul>
-    </div>
-  </div>
-  
-
-    
-  </div>
-</aside>
-
-  
-  
-<main class="main" role="main">
-  <div class="content">
-  <article id="post-Course/csapp/Lab3" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
-    
-    <div class="article-header">
-      
-        
-  
-    <h1 class="article-title" itemprop="name">
-      CSAPP深入理解计算机系统 Lab3(attack Lab) 详解
-    </h1>
-  
-
-      
-      <div class="article-meta">
-        <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/Course/csapp/Lab3/" class="article-date">
-	  <time datetime="2023-10-21T14:51:47.000Z" itemprop="datePublished">2023-10-21</time>
-	</a>
-</span>
-        
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/CSAPP/">CSAPP</a>
-  </span>
-
-        
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link-link" href="/tags/C/" rel="tag">C</a>
-  </span>
-
-
-        
-
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Course/csapp/Lab3/#comments" class="article-comment-link">Comments</a></span>
-        
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">Word Count: 3.4k(words)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">Read Count: 14(minutes)</span>
-	
-
-      </div>
-    </div>
-    <div class="article-entry marked-body" itemprop="articleBody">
-      
-        <blockquote>
+                    
+                         <blockquote>
 <p>本文以记录个人学习CSAPP的过程，使用blog的方式记录能更专注的思考，不至于走马观花式的做实验。同时我关注的不仅是实验本身还有实验中使用工具的学习。</p>
 </blockquote>
 <h2 id="实验说明"><a class="markdownIt-Anchor" href="#实验说明"></a> 实验说明</h2>
 <p>本实验通过向两个程序中进行攻击已达到攻击目的，通过这个实验能了解到通过缓冲区溢出的方法攻击程序的方法，同时对汇编代码、<code>GDB</code>和<code>OBJDUMP</code>等工具以及代码在机器中执行的过程的理解有更深的理解。</p>
-<p>在动手实验之前需要仔细阅读<a target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/3e/attacklab.pdf">实验说明</a>, 本实验可以在实验说明的引导下顺利完成。</p>
+<p>在动手实验之前需要仔细阅读<a class="link"   target="_blank" rel="noopener" href="http://csapp.cs.cmu.edu/3e/attacklab.pdf" >实验说明<i class="fas fa-external-link-alt"></i></a>, 本实验可以在实验说明的引导下顺利完成。</p>
 <p>实验中主要包括两个可执行程序<code>ctarget</code>和<code>rtarget</code>，两个可执行程序都会从标准输入中读入一个字符串在缓冲区中，但是并不会检测是否会出现缓冲区溢出。但是程序会在反馈信息中表示是否出现缓冲区溢出。同时还有一个工具<code>HEX2RAW</code>，是为了方便我们将二进制代码(16进制表示方式)变成对应的ascii码串作为可执行程序的输入</p>
 <p>其中有一些需要说明的重点：</p>
 <ul>
@@ -365,7 +279,12 @@
 <p>直接给出了所需要比较的值<code>cookie</code>的位置，直接用gdb打印出结果</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/x 0x6044e4</span><br><span class="line">0x6044e4 &lt;cookie&gt;:      0x59b997fa</span><br></pre></td></tr></table></figure>
 <p>现在的目标就变成如何将这个值写入到寄存器<code>rdi</code>中，根据提示信息我们不要使用除<code>ret</code>以外的其他跳转指令，所以就要借助栈即存储地址又存储指令。我们可以将将示意图表示如下</p>
-<p><img src="https://pic4.zhimg.com/80/v2-217ebf4b5c8832f3762d154634397080.png" alt="Image" /></p>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="https://pic4.zhimg.com/80/v2-217ebf4b5c8832f3762d154634397080.png"
+                        alt="Image" 
+                 ></p>
 <p>因为我们只能通过输入字符串的方式去攻击，所以我们能做的就是将函数返回地址改为栈中下一行的地址(这里的索引为示例，实际情况中栈的地址是向下增长的)，并将下一行作为注入函数的代码段，同时记得再将返回地址利用<code>mov</code>写入栈中，并将<code>rsp</code>寄存器移动到相应地方以利用<code>ret</code>进入<code>touch2</code>。</p>
 <p>我的注入代码段如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov $0x59b997fa, %rdi</span><br><span class="line">add $0x4, %rsp &quot; 通过后续代码长度计算需要加的长度,0x4是标记一下位置，方便找</span><br><span class="line">ret</span><br></pre></td></tr></table></figure>
@@ -377,7 +296,12 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ ./hex2raw -i key_2.txt | ./ctarget -q</span><br><span class="line">Cookie: 0x59b997fa</span><br><span class="line">Type string:Touch2!: You called touch2(0x59b997fa)</span><br><span class="line">Valid solution <span class="keyword">for</span> level 2 with target ctarget</span><br><span class="line">PASS: Would have posted the following:</span><br><span class="line">        user <span class="built_in">id</span> bovik</span><br><span class="line">        course  15213-f15</span><br><span class="line">        lab     attacklab</span><br><span class="line">        result  1:PASS:0xffffffff:ctarget:2</span><br></pre></td></tr></table></figure>
 <h3 id="part1-level3-phase-3"><a class="markdownIt-Anchor" href="#part1-level3-phase-3"></a> Part1 Level3 (Phase 3)</h3>
 <p>本题和上一题的区别不大，仅仅是改为注入一个字符串指针作为参数，我们可以将字符串的值存在栈中，而将参数传回，具体操作过程如下</p>
-<p><img src="https://pic4.zhimg.com/80/v2-6975107c9128a0bdfaa89c47fef8c7db.png" alt="Image" /></p>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="https://pic4.zhimg.com/80/v2-6975107c9128a0bdfaa89c47fef8c7db.png"
+                        alt="Image" 
+                 ></p>
 <p>注入的代码段和上一题格式相同，需要修改的参数是<code>rdi</code>的值应该为上图栈中第5行的部分。</p>
 <p>首先我们需要知道字符串的值如下，这里我们直接利用<code>gdb</code>，我们先像第一个题一样直接将返回地址设置为<code>touch3</code>，并在<code>touch3</code>处设置断点开始执行，并单步调试到<code>mov    0x202bd3(%rip),%edi</code>后直接通过<code>p/x $edi</code>打印出其值为<code>0x59b997fa</code>，我们知道<code>$rdi</code>和<code>$rsi</code>作为参数传递给函数<code>hexmatch</code>中，通过<code>disas hexmatch</code>可以发现，该函数实际上通过<code>__sprintf_chk</code>这个库函数将<code>$edi</code>的值格式化为字符串，具体格式为<code>&quot;%.8x&quot;</code>表示以16进制方式转换，也就是是说转换后的字符串为<code>&quot;59b997fa&quot;</code>，说明我们需要在上图6的位置添入的就是这个字符串，字符串序列为<code>35 39 62 39 39 37 66 61 00</code>注意字符串末尾的 <code>00</code></p>
 <p>编写汇编如下：</p>
@@ -434,169 +358,331 @@
 <h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
 <p>这个实验总体来说难度不大，但是很有趣味性，通过对栈溢出的攻击，让我们明白程序检测栈是否溢出的重要性。（不过到最后一题才看到<code>hex2raw</code>支持注释，对实验的便捷性还是提供一定帮助。）</p>
 
-      
-    </div>
-    <div class="article-footer">
-      <blockquote class="mt-2x">
-  <ul class="post-copyright list-unstyled">
-    
-    <li class="post-copyright-link hidden-xs">
-      <strong>本文链接：</strong>
-      <a href="https://lcjd99.github.io/Course/csapp/Lab3/" title="CSAPP深入理解计算机系统 Lab3(attack Lab) 详解" target="_blank" rel="external">https://lcjd99.github.io/Course/csapp/Lab3/</a>
-    </li>
-    
-    <li class="post-copyright-license">
-      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
-    </li>
-  </ul>
-</blockquote>
+                    
+                </div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/C/">C</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/Course/csapp/Lab4/"
+                                   title="CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/Course/csapp/Lab2/"
+                                   title="CSAPP深入理解计算机系统 Lab2(bomb Lab) 详解"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">CSAPP深入理解计算机系统 Lab2(bomb Lab) 详解</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
 
 
-<div class="panel panel-default panel-badger">
-  <div class="panel-body">
-    <figure class="media">
-      <div class="media-left">
-        <a href="https://github.com/LCJD99" target="_blank" class="img-burn thumb-sm visible-lg">
-          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
-        </a>
-      </div>
-      <div class="media-body">
-        <h3 class="media-heading"><a href="https://github.com/LCJD99" target="_blank"><span class="text-dark">凌晨九点</span><small class="ml-1x">CS Student</small></a></h3>
-        <div></div>
-      </div>
-    </figure>
-  </div>
-</div>
 
 
-    </div>
-  </article>
-  
-    
-  <section id="comments">
-  	
-      <div id="vcomments"></div>
-    
-  </section>
 
 
-  
-</div>
+                
+            </div>
+        </div>
 
-  <nav class="bar bar-footer clearfix" data-stick-bottom>
-  <div class="bar-inner">
-  
-  <ul class="pager pull-left">
-    
-    <li class="prev">
-      <a href="/Course/csapp/Lab4/" title="CSAPP深入理解计算机系统 Lab4(architecture Lab) 详解"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;Newer</span></a>
-    </li>
-    
-    
-    <li class="next">
-      <a href="/Course/csapp/Lab2/" title="CSAPP深入理解计算机系统 Lab2(bomb Lab) 详解"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
-    </li>
-    
-    
-  </ul>
-  
-  
-  
-  <div class="bar-right">
-    
-  </div>
-  </div>
-</nav>
-  
-
-
-</main>
-
-  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
-	
-	
-    <ul class="social-links">
-    	
-        <li><a href="https://github.com/LCJD99" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
         
-    </ul>
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AF%B4%E6%98%8E"><span class="nav-text"> 实验说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E7%82%B9%E5%B0%8F%E5%9D%91"><span class="nav-text"> 一点小坑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%85%B7%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-text"> 实验具体流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#part1-level1-phase-1"><span class="nav-text"> Part1 Level1 (Phase 1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part1-level2-phase-2"><span class="nav-text"> Part1 Level2 (Phase 2)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part1-level3-phase-3"><span class="nav-text"> Part1 Level3 (Phase 3)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part2-level2-phase-4"><span class="nav-text"> Part2 Level2 (Phase 4)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part2-level3-phase-5"><span class="nav-text"> Part2 Level3 (Phase 5)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text"> 总结</span></a></li></ol>
+    </div>
+</div>
 
-    <div class="copyright">
-    	
-        <div class="publishby">
-        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+        &copy;&nbsp;<span>2022</span>&nbsp;-&nbsp;2024
+        
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">凌晨九点</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        由&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;驱动&nbsp;&&nbsp;主题&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+
+    
+</footer>
+
         </div>
     </div>
-</footer>
-  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
-<script>
-window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
-</script>
 
-<script src="/js/plugin.min.js"></script>
-
-
-<script src="/js/application.js"></script>
-
-
-    <script>
-(function (window) {
-    var INSIGHT_CONFIG = {
-        TRANSLATION: {
-            POSTS: 'Posts',
-            PAGES: 'Pages',
-            CATEGORIES: 'Categories',
-            TAGS: 'Tags',
-            UNTITLED: '(Untitled)',
-        },
-        ROOT_URL: '/',
-        CONTENT_URL: '/content.json',
-    };
-    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
-})(window);
-</script>
-
-<script src="/js/insight.js"></script>
-
-
-
-
-
-
-   
-
-
-
-
-   
+    <!-- post tools -->
     
-  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/valine"></script>
-  <script type="text/javascript">
-  var GUEST = ['nick', 'mail', 'link'];
-  var meta = 'nick,mail,link';
-  meta = meta.split(',').filter(function(item) {
-    return GUEST.indexOf(item) > -1;
-  });
-  new Valine({
-    el: '#vcomments',
-    verify: false,
-    notify: false,
-    appId: '',
-    appKey: '',
-    placeholder: 'Just go go',
-    avatar: 'mm',
-    meta: meta,
-    pageSize: '10' || 10,
-    visitor: false
-  });
-  </script>
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
 
-     
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AF%B4%E6%98%8E"><span class="nav-text"> 实验说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E7%82%B9%E5%B0%8F%E5%9D%91"><span class="nav-text"> 一点小坑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%85%B7%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-text"> 实验具体流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#part1-level1-phase-1"><span class="nav-text"> Part1 Level1 (Phase 1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part1-level2-phase-2"><span class="nav-text"> Part1 Level2 (Phase 2)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part1-level3-phase-3"><span class="nav-text"> Part1 Level3 (Phase 3)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part2-level2-phase-4"><span class="nav-text"> Part2 Level2 (Phase 4)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#part2-level3-phase-5"><span class="nav-text"> Part2 Level3 (Phase 5)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text"> 总结</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
 
 
 
 
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
 
 
 
