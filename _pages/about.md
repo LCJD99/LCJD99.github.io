@@ -25,7 +25,7 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-I am Jingzhou Zhang, currently a Master's student at the School of Software Enginerring, Southeast University.
+I am Jingzhou Zhang（张靖周）, currently a Master's student at the School of Software Enginerring, Southeast University.
 
 My research interests lie in Machine Learning Systems, Large Language Models, and LLM-based Agents. Among these areas, I have a particularly strong and lasting interest in systems research.
 
