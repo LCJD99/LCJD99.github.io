@@ -12,7 +12,7 @@ profile:
     <p>Undergraduate graduation photo by Xin</p>
 
 selected_papers: false # includes a list of papers marked as "selected={true}"
-social: true # includes social icons at the bottom of the page
+social: false # includes social icons at the bottom of the page
 
 announcements:
   enabled: false # includes a list of news items
@@ -25,28 +25,29 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-I am Jingzhou Zhang, currently a Master's student in Software Engineering at the School of Software, Southeast University.
+I am Jingzhou Zhang, currently a Master's student at the School of Software Enginerring, Southeast University.
 
-My own research interests lie in machine learning systems, large language models, and LLM-based agents. Among these areas, I have a particularly strong and lasting interest in systems research.
+My research interests lie in Machine Learning Systems, Large Language Models, and LLM-based Agents. Among these areas, I have a particularly strong and lasting interest in systems research.
+
 
 ### Research Interests
 
 My research interests mainly include the following directions:
 
-#### Edge Computing Systems
+**Edge Computing Systems**
 
-I am interested in how to achieve efficient scheduling and computation under resource-constrained edge environments.  
-For example, I study how to plan and execute tasks on edge devices in order to satisfy service-level objectives (SLOs).
+- I am interested in how to achieve efficient scheduling and computation under resource-constrained edge environments.  
+- For example, I study how to plan and execute tasks on edge devices in order to satisfy service-level objectives (SLOs).
 
-#### Model Inference Optimization
+**Model Inference Optimization**
 
-I focus on improving the efficiency of on-device model inference.  
-For example, I am interested in how to fully exploit the characteristics of edge hardware to accelerate inference.
+- I focus on improving the efficiency of on-device model inference.  
+- For example, I am interested in how to fully exploit the characteristics of edge hardware to accelerate inference.
 
-#### LLM Agents
+**LLM Agents**
 
-I am particularly interested in Agent Memory.  
-For example, I study how to dynamically update memory during the online execution of an agent.
+- I am particularly interested in Agent Memory.  
+- For example, I study how to dynamically update memory during the online execution of an agent.
 
 ### Education
 
